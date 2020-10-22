@@ -192,6 +192,10 @@ def main():
         clock.tick(FPS)
         redraw_window()
 
+        if lives <= 0 or player.health <= 0:
+            lost = True
+            lost_count += 1
+
         if lost:
             if lost_count > FPS * 5:
                 run = False
@@ -205,15 +209,9 @@ def main():
                 enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-1500, -100), random.choice(["red", "blue", "green"]))
                 enemies.append(enemy)
 
-        if lives <= 0 or player.health <= 0:
-            lost = True
-            lost_count += 1
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
-
-
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] and player.x - player_vel > 0:
