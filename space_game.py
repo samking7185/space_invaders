@@ -13,6 +13,8 @@ import pygame
 import os
 import time
 import random
+import math
+
 pygame.font.init()
 
 WIDTH, HEIGHT = 750, 750
@@ -31,7 +33,7 @@ YELLOW_SPACE_SHIP = pygame.image.load(os.path.join("assets", "pixel_ship_yellow.
 RED_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_red.png"))
 GREEN_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_green.png"))
 BLUE_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_blue.png"))
-YELLOW_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_yellow.png"))
+YELLOW_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_yellow2.png"))
 
 #Background
 BG = pygame.transform.scale(pygame.image.load(os.path.join("assets", "background-black.png")), (WIDTH,HEIGHT))
@@ -46,7 +48,13 @@ class Laser:
     def draw(self,window):
         window.blit(self.img, (self.x,self.y))
 
-    def move(self, vel):
+    def move(self, vel, angle):
+        velx = math.sin(angle*math.pi/180)
+        vely = math.cos(angle*math.pi/180)
+        self.y += round(vel*vely)
+        self.x += round(vel*velx)
+
+    def moveY(self, vel):
         self.y += vel
 
     def off_screen(self,height):
@@ -73,12 +81,6 @@ class Ship:
         for laser in self.lasers:
             laser.draw(window)
 
-    # def rotate_surf(self):
-    #     surface = self.ship_img
-    #     angle = self.angle
-    #     rotated_surface = pygame.transform.rotozoom(surface, angle, 1)
-    #     rotated_rect = rotated_surface.get_rect(center = 300,630))
-
     def move_lasers(self, vel, obj):
         #For lasers coming at Player
         self.cooldown()
@@ -89,7 +91,6 @@ class Ship:
             elif laser.collision(obj):
                 obj.health -= 10
                 self.lasers.remove(laser)
-
 
     def get_width(self):
         return self.ship_img.get_width()
@@ -122,7 +123,7 @@ class Player(Ship):
     def move_lasers(self, vel, objs):
         self.cooldown()
         for laser in self.lasers:
-            laser.move(vel)
+            laser.move(vel,self.angle)
             if laser.off_screen(HEIGHT):
                 self.lasers.remove(laser)
             else:
@@ -145,7 +146,7 @@ class Player(Ship):
         rotated_surface = pygame.transform.rotozoom(rotated_surface, angle, 1)
         rotated_rect = rotated_surface.get_rect(center = rotated_rect.center)
         window.blit(rotated_surface,(rotated_rect))
-        
+
         for laser in self.lasers:
             laser.draw(window)
 
@@ -253,7 +254,6 @@ def main():
 
         for enemy in enemies[:]:
             enemy.move(enemy_vel)
-            enemy.move_lasers(laser_vel, player)
 
             if random.randrange(0, 2*60) == 1:
                 enemy.shoot()
