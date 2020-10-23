@@ -58,7 +58,7 @@ class Laser:
 class Ship:
     COOLDOWN = 30
 
-    def __init__(self, x, y, health=100):
+    def __init__(self, x, y, health=100, angle=0):
         self.x = x
         self.y = y
         self.health = health
@@ -69,8 +69,15 @@ class Ship:
 
     def draw(self, window):
         window.blit(self.ship_img, (self.x, self.y))
+
         for laser in self.lasers:
             laser.draw(window)
+
+    # def rotate_surf(self):
+    #     surface = self.ship_img
+    #     angle = self.angle
+    #     rotated_surface = pygame.transform.rotozoom(surface, angle, 1)
+    #     rotated_rect = rotated_surface.get_rect(center = 300,630))
 
     def move_lasers(self, vel, obj):
         #For lasers coming at Player
@@ -102,13 +109,15 @@ class Ship:
             self.lasers.append(laser)
             self.cool_down_counter = 1
 
+
 class Player(Ship):
-    def __init__(self,x,y,health=100):
+    def __init__(self,x,y,health=100, angle=0):
         super().__init__(x,y,health)
         self.ship_img = YELLOW_SPACE_SHIP
         self.laser_img = YELLOW_LASER
         self.mask = pygame.mask.from_surface(self.ship_img)
         self.max_health = health
+        self.angle = angle
 
     def move_lasers(self, vel, objs):
         self.cooldown()
@@ -128,8 +137,19 @@ class Player(Ship):
         pygame.draw.rect(window, (0,255,0), (self.x, self.y + self.ship_img.get_height() + 10, round(self.ship_img.get_width()*(self.health / self.max_health)), 10))
 
     def draw(self, window):
-        super().draw(window)
+        # super().draw(window)
         self.healthbar(window)
+        angle = self.angle
+        rotated_surface = self.ship_img.copy()
+        rotated_rect = self.ship_img.get_rect(center = (self.x+50,self.y+45))
+        rotated_surface = pygame.transform.rotozoom(rotated_surface, angle, 1)
+        rotated_rect = rotated_surface.get_rect(center = rotated_rect.center)
+        window.blit(rotated_surface,(rotated_rect))
+        
+        for laser in self.lasers:
+            laser.draw(window)
+
+
 
 class Enemy(Ship):
     COLOR_MAP = {
@@ -137,9 +157,10 @@ class Enemy(Ship):
                 "blue": (BLUE_SPACE_SHIP, BLUE_LASER),
                 "green": (GREEN_SPACE_SHIP, GREEN_LASER)
                 }
-    def __init__(self,x,y,color,health=100):
+    def __init__(self,x,y,color,health=100,angle=0):
         # Super inherits __init__ from Ship
-        super().__init__(x,y,health)
+        super().__init__(x,y,health,angle)
+        self.angle = 0
         self.ship_img, self.laser_img = self.COLOR_MAP[color]
         self.mask = pygame.mask.from_surface(self.ship_img)
 
@@ -165,8 +186,9 @@ def main():
     enemy_vel = 1
     player_vel = 5
     laser_vel = 5
-
-    player = Player(300,630)
+    player_initx = 300
+    player_inity = 630
+    player = Player(player_initx,player_inity)
     lost = False
     lost_count = 0
 
@@ -214,14 +236,18 @@ def main():
                 quit()
 
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and player.x - player_vel > 0:
-            player.x -= player_vel
-        if keys[pygame.K_RIGHT] and player.x + player_vel + player.get_width() < WIDTH:
-            player.x += player_vel
-        if keys[pygame.K_UP] and player.y - player_vel > 0:
-            player.y -= player_vel
-        if keys[pygame.K_DOWN] and player.y + player_vel + player.get_height() + 20 < HEIGHT:
-            player.y += player_vel
+        # if keys[pygame.K_LEFT] and player.x - player_vel > 0:
+        #     player.x -= player_vel
+        # if keys[pygame.K_RIGHT] and player.x + player_vel + player.get_width() < WIDTH:
+        #     player.x += player_vel
+        if keys[pygame.K_LEFT]:
+            player.angle += 1
+        if keys[pygame.K_RIGHT]:
+            player.angle -= 1
+        # if keys[pygame.K_UP] and player.y - player_vel > 0:
+        #     player.y -= player_vel
+        # if keys[pygame.K_DOWN] and player.y + player_vel + player.get_height() + 20 < HEIGHT:
+        #     player.y += player_vel
         if keys[pygame.K_SPACE]:
             player.shoot()
 
