@@ -12,11 +12,11 @@ class Membership:
         self.re = None
         self.mu = None
 
-    def triangle(self):
+    def triangle(self, values):
         x = self.x
-        le = self.le
-        ce = self.ce
-        re = self.re
+        le = values[0]
+        ce = values[1]
+        re = values[2]
         if x >= le and x < ce:
             mu = (x - le)/(ce - le)
         elif x >= ce and x <= re:
@@ -25,11 +25,11 @@ class Membership:
             mu = 0
         self.mu = mu
 
-    def rshlder(self):
+    def rshlder(self, values):
         x = self.x
-        le = self.le
-        ce = self.ce
-        re = self.re
+        le = values[0]
+        ce = values[1]
+        re = values[2]
         if x >= le and x < ce:
             mu = (x - le)/(ce - le)
         elif x >= ce and x <= re:
@@ -38,11 +38,11 @@ class Membership:
             mu = 0
         self.mu = mu
 
-    def lshlder(self):
+    def lshlder(self, values):
         x = self.x
-        le = self.le
-        ce = self.ce
-        re = self.re
+        le = values[0]
+        ce = values[1]
+        re = values[2]
         if x >= le and x < ce:
             mu = 1
         elif x >= ce and x <= re:
@@ -50,13 +50,6 @@ class Membership:
         else:
             mu = 0
         self.mu = mu
-
-    def output(self):
-        x = self.x
-        le = self.le
-        ce = self.ce
-        re = self.re
-        out = (le, ce, re)
 
 class Rulebase:
     def __init__(self, input):
@@ -75,7 +68,8 @@ class Defuzz:
         self.mu = mu
         self.output = output
         self.crisp = None
-
+        self.defuzz_out()
+        
     def defuzz_out(self):
         A_out = []
         A_outC = []
@@ -86,6 +80,7 @@ class Defuzz:
             A_outN = 0.5*i*(outMF[0] - outMF[2])
             A_out.append(A_outN)
             A_outC.append(outMF[1])
+
         union = np.sum(A_out)
         out_Num = np.multiply(A_out, A_outC)
         crisp_out = np.sum(out_Num)/union
