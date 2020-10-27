@@ -2,7 +2,6 @@ import numpy as np
 import os
 import time
 import random
-import math
 
 class Membership:
     def __init__(self, x):
