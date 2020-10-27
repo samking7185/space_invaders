@@ -29,19 +29,18 @@ class FIS:
         self.angle = None
         self.command = None
         self.calcAngle()
-        self.fuzzy_sys()
 
     def calcAngle(self):
         X1 = self.player[0]; Y1 = self.player[1]
         X2 = self.enemy[0];  Y2 = self.enemy[1]
 
-        X = X2-X1
-        Y = Y2-Y1
+        X = X1-X2
+        Y = Y1-(Y2)
         # angle is in degrees
         self.angle = np.arctan(X/Y) * 180/np.pi
 
 
-    def fuzzy_sys(self):
+    def fuzzy_system(self):
         angleE = self.angle
         angleP = self.player[2]
 
@@ -64,11 +63,13 @@ class FIS:
         in2 = MF.triangle(inMF_values[1])
         in3 = MF.triangle(inMF_values[2])
         in4 = MF.triangle(inMF_values[3])
-        in5 = MF.lshlder(inMF_values[4])
-
+        in5 = MF.rshlder(inMF_values[4])
         MU = [in1,in2,in3,in4,in5]
+
         fz = Defuzz(MU, outMF_values)
-        self.command = fz.crisp()
+        command = fz.defuzz_out()
+        return command
+
 
 def main():
     run = True
@@ -110,6 +111,7 @@ def main():
 
     while run:
         clock.tick(FPS)
+        # time.sleep(2)
         redraw_window()
 
         if lives <= 0 or player.health <= 0:
@@ -127,7 +129,7 @@ def main():
             # wave_length += 1
             wave_length = 1
             for i in range(wave_length):
-                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-1500, -100), random.choice(["red", "blue", "green"]))
+                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 50), random.choice(["red", "blue", "green"]))
                 enemies.append(enemy)
 
         for event in pygame.event.get():
@@ -143,18 +145,22 @@ def main():
         keys = pygame.key.get_pressed()
         playerCoord = [player_initx,player_inity,player.angle]
         enemyCoord = [enemy.x,enemy.y]
+        # print(enemyCoord)
+        # print(player.angle)
+        try:
+            fuzzy_sys = FIS(playerCoord, enemyCoord)
+            angleUpdate = fuzzy_sys.fuzzy_system()
+            player.angle += angleUpdate*(-1)
+        except:
+            continue
 
-        fuzzy_sys = FIS(playerCoord, enemyCoord)
-        player.angle += fuzzy_sys.command()
-        # if keys[pygame.K_LEFT]:
-        #     player.angle += 1
-        # if keys[pygame.K_RIGHT]:
-        #     player.angle -= 1
+        if keys[pygame.K_LEFT]:
+            player.angle += 1
+        if keys[pygame.K_RIGHT]:
+            player.angle -= 1
 
         if keys[pygame.K_SPACE]:
             player.shoot()
-
-
 
         player.move_lasers(-laser_vel, enemies)
 

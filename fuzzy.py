@@ -23,7 +23,7 @@ class Membership:
             mu = (re - x)/(re - ce)
         else:
             mu = 0
-        self.mu = mu
+        return mu
 
     def rshlder(self, values):
         x = self.x
@@ -36,7 +36,7 @@ class Membership:
             mu = 1
         else:
             mu = 0
-        self.mu = mu
+        return mu
 
     def lshlder(self, values):
         x = self.x
@@ -49,7 +49,7 @@ class Membership:
             mu = (re - x)/(re - ce)
         else:
             mu = 0
-        self.mu = mu
+        return mu
 
 class Rulebase:
     def __init__(self, input):
@@ -67,21 +67,21 @@ class Defuzz:
     def __init__(self, mu, output):
         self.mu = mu
         self.output = output
-        self.crisp = None
         self.defuzz_out()
-        
+
     def defuzz_out(self):
         A_out = []
         A_outC = []
-        for i in self.mu:
+        for i in range(len(self.mu)):
             # self.output should be list of tuples
             # (le, ce, re)
             outMF = list(self.output[i])
-            A_outN = 0.5*i*(outMF[0] - outMF[2])
+            A_outN = 0.5*self.mu[i]*(outMF[0] - outMF[2])
             A_out.append(A_outN)
             A_outC.append(outMF[1])
 
         union = np.sum(A_out)
+
         out_Num = np.multiply(A_out, A_outC)
         crisp_out = np.sum(out_Num)/union
-        self.crisp = crisp_out
+        return crisp_out

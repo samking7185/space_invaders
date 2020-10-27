@@ -112,7 +112,7 @@ class Player(Ship):
                 for obj in objs:
                     if laser.collision(obj):
                         objs.remove(obj)
-                        if laser in self.lasers:
+                        if laser in self.lasers[0]:
                             self.lasers.remove(tuple)
 
     def healthbar(self, window):
