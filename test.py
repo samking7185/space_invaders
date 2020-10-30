@@ -10,4 +10,4 @@ n = [5, 10]
 UB = [5, 5]
 LB = [0, 0]
 gaTest = GA(M, MaxGen, Pc, Pm, Er, n, UB, LB)
-print(gaTest.Chromosome)
+# print(gaTest.Chromosome.normalfitness)
