@@ -6,8 +6,8 @@ Pc = 0.8
 Pm = 0.2
 Er = 0.1
 
-n = [5, 10]
-UB = [5, 5]
-LB = [0, 0]
+n = [5, 10, 5]
+UB = [5, 5, 5]
+LB = [0, 0, 0]
 gaTest = GA(M, MaxGen, Pc, Pm, Er, n, UB, LB)
 # print(gaTest.Chromosome.normalfitness)
