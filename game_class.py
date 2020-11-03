@@ -98,7 +98,8 @@ class Player(Ship):
         self.mask = pygame.mask.from_surface(self.ship_img)
         self.max_health = health
         self.angle = angle
-
+        self.fitness = None
+        
     def move_lasers(self, vel, objs):
         self.cooldown()
         # for laser in self.lasers:

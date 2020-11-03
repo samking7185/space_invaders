@@ -22,6 +22,8 @@ class GA:
     class initChromosome:
         def __init__(self):
             self.population = None
+            self.newPopulation = None
+            self.newPopulation2 = None
             self.fitness = None
             self.normalfitness = None
             self.parent1 = None
@@ -54,6 +56,7 @@ class GA:
         value = np.sum(self.Chromosome.fitness)
         normalized_fitness = [x / value for x in self.Chromosome.fitness]
         self.Chromosome.normalfitness = normalized_fitness
+
         for i in range(self.M):
             temp_population.append((self.Chromosome.population[i],self.Chromosome.fitness[i],self.Chromosome.normalfitness[i]))
         temp_population.sort(reverse=True, key=lambda x: x[2])
@@ -96,17 +99,17 @@ class GA:
         r = r[0]
 
         if r[0] <= self.Pc:
-            self.child1 = "".join(temp_child1)
+            self.Chromosome.child1 = "".join(temp_child1)
         else:
-            self.child1 = temp_parent1
+            self.Chromosome.child1 = temp_parent1
         if r[1] <= self.Pc:
-            self.child2 = "".join(temp_child2)
+            self.Chromosome.child2 = "".join(temp_child2)
         else:
-            self.child2 = temp_parent2
+            self.Chromosome.child2 = temp_parent2
 
     def mutation(self):
-        temp_child1 = list(self.child1)
-        temp_child2 = list(self.child2)
+        temp_child1 = list(self.Chromosome.child1)
+        temp_child2 = list(self.Chromosome.child2)
 
         r1 = np.random.rand(1,len(self.n))
         idxm1 = np.random.randint(1,self.n)
@@ -135,3 +138,21 @@ class GA:
                 else:
                     numval = num + np.sum(self.n[0:idx])
                     temp_child2[numval] = valm2[idx]
+
+        def elitism(self):
+            newPopulation2 = []
+            elite_no = round(np.multiply(self.M*self.Er))
+
+            temp_population = self.Chromosome.population
+            temp_population.sort(reverse=True, key=lambda x: x[1])
+
+            temp_population2 = self.Chromosome.newPopulation
+            temp_population2.sort(reverse=True, key=lambda x: x[1])
+
+            for i in range(elite_no):
+                newPopulation2.append(temp_population[i])
+
+            for j in range(elite_no,self.M+1):
+                newPopulation2.append(temp_population2[j])
+
+            self.Chromosome.newPopulation2 = newPopulation2

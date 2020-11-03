@@ -35,7 +35,7 @@ class FIS:
         X2 = self.enemy[0];  Y2 = self.enemy[1]
 
         X = X1-X2
-        Y = Y1-(Y2)
+        Y = Y1-Y2
         # angle is in degrees
         self.angle = np.arctan(X/Y) * 180/np.pi
 
