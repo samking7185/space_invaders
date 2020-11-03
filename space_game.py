@@ -16,60 +16,7 @@ import random
 import math
 import numpy as np
 from game_class import *
-from fuzzy import *
-
-class FIS:
-    def __init__(self, player, enemy):
-        # player is the coordinates and angle of the player character
-        # [X,Y,angle]
-        self.player = player
-        # enemy is an array of the enemy coordinate [X,Y]
-        self.enemy = enemy
-        self.l = None
-        self.angle = None
-        self.command = None
-        self.calcAngle()
-
-    def calcAngle(self):
-        X1 = self.player[0]; Y1 = self.player[1]
-        X2 = self.enemy[0];  Y2 = self.enemy[1]
-
-        X = X1-X2
-        Y = Y1-Y2
-        # angle is in degrees
-        self.angle = np.arctan(X/Y) * 180/np.pi
-
-
-    def fuzzy_system(self):
-        angleE = self.angle
-        angleP = self.player[2]
-
-        input = angleP - angleE
-        MF = Membership(input)
-
-        inMF_values = [(-90,-60,-30),
-                     (-60,-30,0),
-                     (-30,0,30),
-                     (0,30,60),
-                     (30,60,90)]
-
-        outMF_values = [(-3,-2,-1),
-                     (-2,-1,0),
-                     (-1,0,1),
-                     (0,1,2),
-                     (1,2,3)]
-
-        in1 = MF.lshlder(inMF_values[0])
-        in2 = MF.triangle(inMF_values[1])
-        in3 = MF.triangle(inMF_values[2])
-        in4 = MF.triangle(inMF_values[3])
-        in5 = MF.rshlder(inMF_values[4])
-        MU = [in1,in2,in3,in4,in5]
-
-        fz = Defuzz(MU, outMF_values)
-        command = fz.defuzz_out()
-        return command
-
+from fis_class import *
 
 def main():
     run = True
@@ -85,7 +32,7 @@ def main():
     enemy_vel = 1
     player_vel = 5
     laser_vel = 5
-    player_initx = 300
+    player_initx = 350
     player_inity = 630
     player = Player(player_initx,player_inity)
     lost = False
@@ -148,7 +95,7 @@ def main():
         # print(enemyCoord)
         # print(player.angle)
         try:
-            fuzzy_sys = FIS(playerCoord, enemyCoord)
+            fuzzy_sys = steerFIS(playerCoord, enemyCoord)
             angleUpdate = fuzzy_sys.fuzzy_system()
             player.angle += angleUpdate*(-1)
         except:

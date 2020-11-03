@@ -7,7 +7,7 @@ import numpy as np
 
 pygame.font.init()
 
-WIDTH, HEIGHT = 750, 750
+WIDTH, HEIGHT = 800, 800
 
 WIN = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("Space Invaders")
@@ -99,7 +99,7 @@ class Player(Ship):
         self.max_health = health
         self.angle = angle
         self.fitness = None
-        
+
     def move_lasers(self, vel, objs):
         self.cooldown()
         # for laser in self.lasers:
