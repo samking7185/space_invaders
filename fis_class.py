@@ -22,7 +22,10 @@ class steerFIS:
         X = X1-X2
         Y = Y1-Y2
         # angle is in degrees
-        self.angle = np.arctan(X/Y) * 180/np.pi
+        if Y == 0:
+            self.angle = np.arctan(X/0.001) * 180/np.pi
+        else:
+            self.angle = np.arctan(X/Y) * 180/np.pi
 
 
     def fuzzy_system(self):
@@ -118,10 +121,10 @@ class leadFIS:
         R11 = R1
         R11.extend(R2[1:4])
         R11.append(R3[2])
-        R22 = R4[1:4]
+        R22 = []
         R22.extend([R2[0], R2[4], R3[0], R3[1], R3[3], R3[4]])
-        R33 = R5
-        R33.extend([R4[0], R4[4]])
+        R33 = R4
+        R33.extend(R5)
 
         R111 = R.OR_rule(R11)
         R222 = R.OR_rule(R22)
@@ -131,4 +134,3 @@ class leadFIS:
         fz = Defuzz(MU, outMF_values)
         command = fz.defuzz_out()
         self.enemy = [enemyX, (enemyY + command)]
-        print(command)
