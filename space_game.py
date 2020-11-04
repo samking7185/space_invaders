@@ -95,7 +95,9 @@ def main():
         # print(enemyCoord)
         # print(player.angle)
         try:
-            fuzzy_sys = steerFIS(playerCoord, enemyCoord)
+            fuzzy_lead = leadFIS(enemyCoord)
+            fuzzy_sys = steerFIS(playerCoord, fuzzy_lead.enemy)
+            # fuzzy_sys = steerFIS(playerCoord, enemyCoord)
             angleUpdate = fuzzy_sys.fuzzy_system()
             player.angle += angleUpdate*(-1)
         except:

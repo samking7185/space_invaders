@@ -51,16 +51,16 @@ class Membership:
         return mu
 
 class Rulebase:
-    def __init__(self, input):
-        self.input = input
+    def __init__(self):
+        self.output = None
 
-    def AND_rule(self):
-        input = self.input
-        mu_out = max(input)
+    def AND_rule(self, input):
+        self.output = np.amin(input)
+        return self.output
 
-    def OR_rule(self):
-        input = self.input
-        mu_out = min(input)
+    def OR_rule(self, input):
+        self.output = np.amax(input)
+        return self.output
 
 class Defuzz:
     def __init__(self, mu, output):
@@ -75,6 +75,7 @@ class Defuzz:
             # self.output should be list of tuples
             # (le, ce, re)
             outMF = list(self.output[i])
+
             A_outN = 0.5*self.mu[i]*(outMF[0] - outMF[2])
             A_out.append(A_outN)
             A_outC.append(outMF[1])
