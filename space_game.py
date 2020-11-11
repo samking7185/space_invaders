@@ -18,7 +18,8 @@ import numpy as np
 from game_class import *
 from fis_class import *
 
-def game():
+def game(enemy_no, level_quit):
+    fitness = []
     run = True
     FPS = 60
     level = 0
@@ -74,19 +75,24 @@ def game():
         if len(enemies) == 0:
             level += 1
             # wave_length += 1
-            wave_length = 1
+            wave_length = enemy_no
             for i in range(wave_length):
-                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 50), random.choice(["red", "blue", "green"]))
+                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-50, 0), random.choice(["red", "blue", "green"]))
                 enemies.append(enemy)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
 
+        if level >= level_quit:
+            return player.fitness
+            quit()
+
         for enemy in enemies[:]:
             enemy.move(enemy_vel)
             if enemy.y + enemy.get_height() > HEIGHT:
                 lives -= 1
+                fitness.append(-10)
                 enemies.remove(enemy)
 
         keys = pygame.key.get_pressed()
@@ -110,7 +116,6 @@ def game():
 
         if keys[pygame.K_SPACE]:
             player.shoot()
-
         player.move_lasers(-laser_vel, enemies)
 
 if __name__ == "__main__":

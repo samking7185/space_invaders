@@ -34,6 +34,7 @@ class Laser:
         self.y = y
         self.img = img
         self.mask = pygame.mask.from_surface(self.img)
+        self.fitness = 0
 
     def draw(self,window):
         window.blit(self.img, (self.x,self.y))
@@ -64,6 +65,7 @@ class Ship:
         self.laser_img = None
         self.lasers = []
         self.cool_down_counter = 0
+        self.fitness = []
 
     def draw(self, window):
         window.blit(self.ship_img, (self.x, self.y))
@@ -90,6 +92,7 @@ class Ship:
             self.lasers.append(laser_obj)
             self.cool_down_counter = 1
 
+
 class Player(Ship):
     def __init__(self,x,y,health=100, angle=0):
         super().__init__(x,y,health)
@@ -98,7 +101,6 @@ class Player(Ship):
         self.mask = pygame.mask.from_surface(self.ship_img)
         self.max_health = health
         self.angle = angle
-        self.fitness = None
 
     def move_lasers(self, vel, objs):
         self.cooldown()
@@ -108,10 +110,12 @@ class Player(Ship):
             laser = tuple[0]
             laser.move(vel,laserangle)
             if laser.off_screen(HEIGHT):
+                self.fitness.append(-10)
                 self.lasers.remove(tuple)
             else:
                 for obj in objs:
                     if laser.collision(obj):
+                        self.fitness.append(50)
                         objs.remove(obj)
                         if laser in self.lasers[0]:
                             self.lasers.remove(tuple)

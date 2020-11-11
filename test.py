@@ -14,5 +14,6 @@ UB = [5, 5]
 LB = [0, 0]
 # gaTest = GA(M, MaxGen, Pc, Pm, Er, n, UB, LB)
 # print(gaTest.Chromosome.normalfitness)
-
-game()
+enemy_no = 1
+level_quit = 10
+fit = game(enemy_no, level_quit)
