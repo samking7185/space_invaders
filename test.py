@@ -1,6 +1,8 @@
 from GA import *
 import numpy as np
 from fuzzy import *
+from space_game import *
+
 M = 10
 MaxGen = 100
 Pc = 0.8
@@ -13,6 +15,4 @@ LB = [0, 0]
 # gaTest = GA(M, MaxGen, Pc, Pm, Er, n, UB, LB)
 # print(gaTest.Chromosome.normalfitness)
 
-R = Rulebase()
-
-print(R.AND_rule([0.2,1]))
+game()

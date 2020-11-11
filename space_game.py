@@ -18,7 +18,7 @@ import numpy as np
 from game_class import *
 from fis_class import *
 
-def main():
+def game():
     run = True
     FPS = 60
     level = 0
@@ -113,4 +113,5 @@ def main():
 
         player.move_lasers(-laser_vel, enemies)
 
-main()
+if __name__ == "__main__":
+    game()
