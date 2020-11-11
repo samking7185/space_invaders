@@ -83,5 +83,8 @@ class Defuzz:
         union = np.sum(A_out)
 
         out_Num = np.multiply(A_out, A_outC)
-        crisp_out = np.sum(out_Num)/union
+        if abs(union) > 0.1:
+            crisp_out = np.sum(out_Num)/union
+        else:
+            crisp_out = 0
         return crisp_out
