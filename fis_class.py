@@ -134,3 +134,67 @@ class leadFIS:
         fz = Defuzz(MU, outMF_values)
         command = fz.defuzz_out()
         self.enemy = [enemyX, (enemyY + command)]
+
+class fireFIS:
+    def __init__(self, angleUpdate, enemy):
+        self.enemy = enemy
+        self.fire = 0
+        self.angle = angleUpdate
+        self.fuzzy_system()
+
+    def fuzzy_system(self):
+        enemyX = self.enemy[0]
+        enemyY = self.enemy[1]
+        angle = np.absolute(self.angle)
+
+        MF1 = Membership(enemyX)
+        MF2 = Membership(enemyY)
+        MF3 = Membership(angle)
+
+        inMF_values1 = [(0, 100, 200),
+                     (100,250,400),
+                     (250,400,550),
+                     (400,550,700),
+                     (600,700,800)]
+
+        inMF_values2 = [(0, 100, 200),
+                     (100,250,400),
+                     (250,400,550),
+                     (400,550,700),
+                     (600,700,800)]
+
+        inMF_values3 = [(-0.125, 0, 0.04),
+                     (0, 0.25, 0.5),
+                     (0.25,0.5,1)]
+
+        outMF_values = [(8, 9, 10)]
+
+        in11 = MF1.lshlder(inMF_values1[0])
+        in12 = MF1.triangle(inMF_values1[1])
+        in13 = MF1.triangle(inMF_values1[2])
+        in14 = MF1.triangle(inMF_values1[3])
+        in15 = MF1.rshlder(inMF_values1[4])
+
+        in21 = MF2.lshlder(inMF_values2[0])
+        in22 = MF2.triangle(inMF_values2[1])
+        in23 = MF2.triangle(inMF_values2[2])
+        in24 = MF2.triangle(inMF_values2[3])
+        in25 = MF2.rshlder(inMF_values2[4])
+
+        in31 = MF3.triangle(inMF_values3[0])
+        in32 = MF3.triangle(inMF_values3[1])
+        in33 = MF3.rshlder(inMF_values3[2])
+
+
+        R = Rulebase()
+        R1 = [R.AND_rule([in11, in21, in31]), R.AND_rule([in12, in21, in31]), R.AND_rule([in13, in21, in31]), R.AND_rule([in14, in21, in31]), R.AND_rule([in15, in21, in31])]
+        R2 = [R.AND_rule([in11, in22, in31]), R.AND_rule([in12, in22, in31]), R.AND_rule([in13, in22, in31]), R.AND_rule([in14, in22, in31]), R.AND_rule([in15, in22, in31])]
+        R3 = [R.AND_rule([in11, in23, in31]), R.AND_rule([in12, in23, in31]), R.AND_rule([in13, in23, in31]), R.AND_rule([in14, in23, in31]), R.AND_rule([in15, in23, in31])]
+        R4 = [R.AND_rule([in11, in24, in31]), R.AND_rule([in12, in24, in31]), R.AND_rule([in13, in24, in31]), R.AND_rule([in14, in24, in31]), R.AND_rule([in15, in24, in31])]
+        R5 = [R.AND_rule([in11, in25, in31]), R.AND_rule([in12, in25, in31]), R.AND_rule([in13, in25, in31]), R.AND_rule([in14, in25, in31]), R.AND_rule([in15, in25, in31])]
+
+        MU = [R.OR_rule([R1, R2, R3, R4, R5])]
+
+        fz = Defuzz(MU, outMF_values)
+        command = fz.defuzz_out()
+        self.fire = command
