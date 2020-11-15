@@ -15,10 +15,10 @@ import time
 import random
 import math
 import numpy as np
-from game_class import *
+from fitGame_class import *
 from fis_class import *
 
-def game(enemy_no, level_quit):
+def game(enemy_no, level_quit, gene):
     fitness = []
     run = True
     FPS = 60
@@ -36,6 +36,8 @@ def game(enemy_no, level_quit):
     player_initx = 350
     player_inity = 630
     player = Player(player_initx,player_inity)
+
+    player.cool_down_counter = 0
     lost = False
     lost_count = 0
 
@@ -74,27 +76,23 @@ def game(enemy_no, level_quit):
 
         if len(enemies) == 0:
             level += 1
-            # wave_length += 1
-            wave_length = enemy_no
-            for i in range(wave_length):
+            for i in range(enemy_no):
                 enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-50, 0), random.choice(["red", "blue", "green"]))
                 enemies.append(enemy)
-            if level > 1:
-                player.cool_down_counter = 0
-
+            player.cool_down_counter = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
-
-        if level >= level_quit:
-            return player.fitness
-            quit()
 
         for enemy in enemies[:]:
             enemy.move(enemy_vel)
             if enemy.y + enemy.get_height() > HEIGHT:
                 lives -= 1
                 enemies.remove(enemy)
+
+        if level >= level_quit:
+            return player.fitness
+            quit()
 
         keys = pygame.key.get_pressed()
         playerCoord = [player_initx,player_inity,player.angle]
@@ -118,5 +116,3 @@ def game(enemy_no, level_quit):
         if keys[pygame.K_SPACE]:
             player.shoot()
         fitness_val = player.move_lasers(-laser_vel, enemies)
-if __name__ == "__main__":
-    game()

@@ -1,4 +1,3 @@
-
 import pygame
 import os
 import time
@@ -60,18 +59,104 @@ class Laser:
     def buffer_collision(self, obj):
         return collide_buffer(self, obj)
 
-class Ship:
-    COOLDOWN = 100
-
-    def __init__(self, x, y, health=100, angle=0):
+class Player:
+    def __init__(self,x,y,health=100, angle=0):
+        self.ship_img = YELLOW_SPACE_SHIP
+        self.laser_img = YELLOW_LASER
+        self.mask = pygame.mask.from_surface(self.ship_img)
+        self.max_health = health
+        self.angle = angle
         self.x = x
         self.y = y
         self.health = health
-        self.ship_img = None
-        self.laser_img = None
         self.lasers = []
         self.cool_down_counter = 0
         self.fitness = []
+
+    def get_width(self):
+        return self.ship_img.get_width()
+
+    def get_height(self):
+        return self.ship_img.get_height()
+
+    def shoot(self):
+        if self.cool_down_counter == 0:
+            laser = Laser(self.x, self.y, self.laser_img)
+            laser_obj = (laser,self.angle)
+            self.lasers.append(laser_obj)
+            self.cool_down_counter = 1
+            self.fitness.append('s')
+
+    def draw(self, window):
+        angle = self.angle
+        rotated_surface = self.ship_img.copy()
+        rotated_rect = self.ship_img.get_rect(center = (self.x+50,self.y+45))
+        rotated_surface = pygame.transform.rotozoom(rotated_surface, angle, 1)
+        rotated_rect = rotated_surface.get_rect(center = rotated_rect.center)
+        window.blit(rotated_surface,(rotated_rect))
+
+        for (index,tuple) in enumerate(self.lasers):
+            laser = tuple[0]
+            laser.draw(window)
+
+    def move_lasers(self, vel, objs):
+        for (index,tuple) in enumerate(self.lasers):
+            laserangle = tuple[1]
+            laser = tuple[0]
+            laser.move(vel,laserangle)
+
+            if laser.off_screenY(HEIGHT):
+                laser.fitness.append(-50)
+                self.lasers.remove(tuple)
+            elif laser.off_screenX(WIDTH):
+                laser.fitness.append(-50)
+                self.lasers.remove(tuple)
+
+            else:
+                for obj in objs:
+                    if laser.collision(obj):
+                        laser.fitness.append(100)
+                        objs.remove(obj)
+                        if laser in self.lasers[0]:
+                            self.lasers.remove(tuple)
+                    if laser.buffer_collision(obj):
+                        val = np.max(laser.buffer_collision(obj))
+                        laser.fitness.append(val)
+            if laser.fitness:
+                if laser.fitness == [-50]:
+                    self.fitness.append(laser.fitness[0])
+                elif laser.fitness == [100]:
+                    self.fitness.append(laser.fitness[0])
+                else:
+                    self.fitness.append(np.amax(laser.fitness))
+                final_fit = self.fitness
+                return final_fit
+
+class Enemy():
+    COLOR_MAP = {
+                "red": (RED_SPACE_SHIP, RED_LASER),
+                "blue": (BLUE_SPACE_SHIP, BLUE_LASER),
+                "green": (GREEN_SPACE_SHIP, GREEN_LASER)
+                }
+    def __init__(self,x,y,color,health=100,angle=0):
+        self.x = x
+        self.y = y
+        self.health = health
+        self.lasers = []
+        self.cool_down_counter = 0
+        self.fitness = []
+        self.angle = 0
+        self.ship_img, self.laser_img = self.COLOR_MAP[color]
+        self.mask = pygame.mask.from_surface(self.ship_img)
+        self.buffer = pygame.mask.from_surface(pygame.transform.scale(self.ship_img,(round(self.ship_img.get_width()*2) , round(self.ship_img.get_height()*2))))
+        self.buffer1 = pygame.mask.from_surface(pygame.transform.scale(self.ship_img,(round(self.ship_img.get_width()*3) , round(self.ship_img.get_height()*3))))
+        self.buffer2 = pygame.mask.from_surface(pygame.transform.scale(self.ship_img,(round(self.ship_img.get_width()*4) , round(self.ship_img.get_height()*4))))
+
+    def move(self, vel):
+        self.y += vel
+
+    def off_screenY(self,height):
+        return not (self.y <= height and self.y >= 0)
 
     def draw(self, window):
         window.blit(self.ship_img, (self.x, self.y))
@@ -98,99 +183,6 @@ class Ship:
             self.lasers.append(laser_obj)
             self.cool_down_counter = 1
             self.fitness.append('s')
-
-
-class Player(Ship):
-    def __init__(self,x,y,health=100, angle=0):
-        super().__init__(x,y,health)
-        self.ship_img = YELLOW_SPACE_SHIP
-        self.laser_img = YELLOW_LASER
-        self.mask = pygame.mask.from_surface(self.ship_img)
-        self.max_health = health
-        self.angle = angle
-
-    def move_lasers(self, vel, objs):
-        # self.cooldown()
-        # for laser in self.lasers:
-        for (index,tuple) in enumerate(self.lasers):
-            laserangle = tuple[1]
-            laser = tuple[0]
-            laser.move(vel,laserangle)
-
-            if laser.off_screenY(HEIGHT):
-                laser.fitness.append(-50)
-                self.lasers.remove(tuple)
-            elif laser.off_screenX(WIDTH):
-                laser.fitness.append(-50)
-                self.lasers.remove(tuple)
-
-            else:
-                for obj in objs:
-                    if laser.collision(obj):
-                        laser.fitness.append(100)
-                        objs.remove(obj)
-                        if laser in self.lasers[0]:
-                            self.lasers.remove(tuple)
-                    if laser.buffer_collision(obj):
-                        val = np.max(laser.buffer_collision(obj))
-                        laser.fitness.append(val)
-                        # objs.remove(obj)
-                        # if laser in self.lasers[0]:
-                        #     self.lasers.remove(tuple)
-                    if obj.off_screenY(HEIGHT):
-                        laser.fitness.append(-500)
-            if laser.fitness:
-                if len(laser.fitness) == 0 and np.amin(laser.fitness) == -50:
-                    self.fitness.append(-10)
-                elif len(laser.fitness) > 0 and np.amin(laser.fitness) == -50:
-                    self.fitness.append(np.amax(laser.fitness))
-                else:
-                    self.fitness.append(np.amax(laser.fitness))
-                final_fit = self.fitness
-                return final_fit
-
-    def healthbar(self, window):
-        pygame.draw.rect(window, (255,0,0), (self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width(), 10))
-        pygame.draw.rect(window, (0,255,0), (self.x, self.y + self.ship_img.get_height() + 10, round(self.ship_img.get_width()*(self.health / self.max_health)), 10))
-
-    def draw(self, window):
-        # super().draw(window)
-        # self.healthbar(window)
-        angle = self.angle
-        rotated_surface = self.ship_img.copy()
-        rotated_rect = self.ship_img.get_rect(center = (self.x+50,self.y+45))
-        rotated_surface = pygame.transform.rotozoom(rotated_surface, angle, 1)
-        rotated_rect = rotated_surface.get_rect(center = rotated_rect.center)
-        window.blit(rotated_surface,(rotated_rect))
-
-        # for laser in self.lasers:
-        for (index,tuple) in enumerate(self.lasers):
-            laser = tuple[0]
-            laser.draw(window)
-
-
-
-class Enemy(Ship):
-    COLOR_MAP = {
-                "red": (RED_SPACE_SHIP, RED_LASER),
-                "blue": (BLUE_SPACE_SHIP, BLUE_LASER),
-                "green": (GREEN_SPACE_SHIP, GREEN_LASER)
-                }
-    def __init__(self,x,y,color,health=100,angle=0):
-        # Super inherits __init__ from Ship
-        super().__init__(x,y,health,angle)
-        self.angle = 0
-        self.ship_img, self.laser_img = self.COLOR_MAP[color]
-        self.mask = pygame.mask.from_surface(self.ship_img)
-        self.buffer = pygame.mask.from_surface(pygame.transform.scale(self.ship_img,(round(self.ship_img.get_width()*2) , round(self.ship_img.get_height()*2))))
-        self.buffer1 = pygame.mask.from_surface(pygame.transform.scale(self.ship_img,(round(self.ship_img.get_width()*3) , round(self.ship_img.get_height()*3))))
-        self.buffer2 = pygame.mask.from_surface(pygame.transform.scale(self.ship_img,(round(self.ship_img.get_width()*4) , round(self.ship_img.get_height()*4))))
-
-    def move(self, vel):
-        self.y += vel
-
-    def off_screenY(self,height):
-        return not (self.y <= height and self.y >= 0)
 
 def collide(obj1, obj2):
     offset_x = obj2.x - obj1.x
