@@ -16,6 +16,11 @@ class Membership:
         le = values[0]
         ce = values[1]
         re = values[2]
+        if le == ce:
+            ce = le + 20
+        elif re == ce:
+            re = ce + 20
+
         if x >= le and x < ce:
             mu = (x - le)/(ce - le)
         elif x >= ce and x <= re:
@@ -29,6 +34,12 @@ class Membership:
         le = values[0]
         ce = values[1]
         re = values[2]
+
+        if le == ce:
+            ce = le + 20
+        elif re == ce:
+            re = ce + 20
+
         if x >= le and x < ce:
             mu = (x - le)/(ce - le)
         elif x >= ce and x <= re:
@@ -42,6 +53,12 @@ class Membership:
         le = values[0]
         ce = values[1]
         re = values[2]
+
+        if le == ce:
+            ce = le + 20
+        elif re == ce:
+            re = ce + 20
+
         if x >= le and x < ce:
             mu = 1
         elif x >= ce and x <= re:

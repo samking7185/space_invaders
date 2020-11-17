@@ -48,8 +48,7 @@ class GA:
                 self.fitnessFunc(enemy, level_quit, i, 'New')
             self.elitism()
             self.Chromosome.population = self.Chromosome.newPopulation2
-            print(type(self.Chromosome.population[:,1]))
-            print(self.Chromosome.population[:,1])
+            print(self.Chromosome.population[:,0])
             # max_fit = np.amax(self.Chromosome.population[:,1])
             # print(max_fit)
 

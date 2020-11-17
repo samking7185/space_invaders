@@ -113,9 +113,9 @@ def game(enemy_no, level_quit, gene, N):
 
         gene_pieces = processGene(gene, N)
         fuzzy_lead = leadFIS(enemyCoord, gene_pieces)
+        # print(fuzzy_lead.enemy)
         fuzzy_sys = steerFIS(playerCoord, fuzzy_lead.enemy)
         angleUpdate = fuzzy_sys.fuzzy_system()
-
         player.angle += angleUpdate*(-1)
 
         fuzzy_shoot = fireFIS(angleUpdate, fuzzy_lead.enemy, gene_pieces)
