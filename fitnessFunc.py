@@ -18,7 +18,20 @@ import numpy as np
 from fitGame_class import *
 from fis_class import *
 
-def game(enemy_no, level_quit, gene):
+def processGene(gene, N):
+    allele = gene[0].tolist()
+
+    gene_pieces = []
+    Nvals = np.cumsum(N)
+    Nvals = Nvals.tolist()
+
+    Nvals.insert(0,0)
+    for idx in range(len(Nvals[:-1])):
+        val = allele[Nvals[idx]:Nvals[idx+1]]
+        gene_pieces.append(val)
+    return gene_pieces
+
+def game(enemy_no, level_quit, gene, N):
     fitness = []
     run = True
     FPS = 60
@@ -77,7 +90,7 @@ def game(enemy_no, level_quit, gene):
         if len(enemies) == 0:
             level += 1
             for i in range(enemy_no):
-                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-50, 0), random.choice(["red", "blue", "green"]))
+                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 10), random.choice(["red", "blue", "green"]))
                 enemies.append(enemy)
             player.cool_down_counter = 0
         for event in pygame.event.get():
@@ -98,13 +111,14 @@ def game(enemy_no, level_quit, gene):
         playerCoord = [player_initx,player_inity,player.angle]
         enemyCoord = [enemy.x,enemy.y]
 
-        fuzzy_lead = leadFIS(enemyCoord)
+        gene_pieces = processGene(gene, N)
+        fuzzy_lead = leadFIS(enemyCoord, gene_pieces)
         fuzzy_sys = steerFIS(playerCoord, fuzzy_lead.enemy)
         angleUpdate = fuzzy_sys.fuzzy_system()
 
         player.angle += angleUpdate*(-1)
 
-        fuzzy_shoot = fireFIS(angleUpdate, fuzzy_lead.enemy)
+        fuzzy_shoot = fireFIS(angleUpdate, fuzzy_lead.enemy, gene_pieces)
 
         if fuzzy_shoot.fire > 8:
             player.shoot()

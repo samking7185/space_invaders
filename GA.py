@@ -2,7 +2,7 @@ import numpy as np
 import os
 import time
 from fitnessFunc import *
-
+import sys
 class GA:
     def __init__(self,M, MaxGen, Pc, Pm, Er, n, UB, LB, type, enemy, level_quit):
         self.M = M
@@ -33,6 +33,7 @@ class GA:
 
     def evolution(self, enemy, level_quit):
         self.initialization()
+
         for idx in range(self.M):
             self.fitnessFunc(enemy, level_quit, idx, None)
         for idxm in range(1,self.MaxGen):
@@ -62,18 +63,18 @@ class GA:
         fit_list = []
         if gene == 'Best':
             for i in range(5):
-                fit = game(enemy, level_quit, gene)
+                fit = game(enemy, level_quit, gene, self.N)
                 fit_list.append(fit)
             # fit_value = np.random.randint(1, 100)
         elif gene == 'New':
             for i in range(5):
-                fit = game(enemy, level_quit, self.Chromosome.newPopulation[ind])
+                fit = game(enemy, level_quit, self.Chromosome.newPopulation[ind], self.n)
                 fit_list.append(fit)
 
             # fit_value = np.random.randint(1, 100)
         else:
             for i in range(5):
-                fit = game(enemy, level_quit, self.Chromosome.population[ind])
+                fit = game(enemy, level_quit, self.Chromosome.population[ind], self.n)
                 fit_list.append(fit)
 
             # fit_value = np.random.randint(1, 100)
@@ -90,8 +91,7 @@ class GA:
         #     fit_array = fit[idx[val]+1:idx[val+1]]
         #     fitness_array.append(list(map(int, fit_array)))
         # fitness_array.append(list(map(int, fit[idx[-1]+1:])))
-        # trimmed_fitness = []
-        print(fitness_array)
+        trimmed_fitness = []
         for lst in fitness_array:
             if lst:
                 if lst == [-50]:

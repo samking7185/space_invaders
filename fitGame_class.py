@@ -85,7 +85,7 @@ class Player:
             laser_obj = (laser,self.angle)
             self.lasers.append(laser_obj)
             self.cool_down_counter = 1
-            self.fitness.append('s')
+            # self.fitness.append('s')
 
     def draw(self, window):
         angle = self.angle
