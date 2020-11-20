@@ -18,6 +18,8 @@ import numpy as np
 from game_class import *
 from fis_class import *
 
+enemy_no = 5
+level_quit = 5
 def game(enemy_no, level_quit):
     fitness = []
     run = True
@@ -77,10 +79,15 @@ def game(enemy_no, level_quit):
             # wave_length += 1
             wave_length = enemy_no
             for i in range(wave_length):
-                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-50, 0), random.choice(["red", "blue", "green"]))
+                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 50), random.choice(["red", "blue", "green"]))
                 enemies.append(enemy)
-            if level > 1:
-                player.cool_down_counter = 0
+
+        printval = np.array([getattr(enemies[0], 'y'), getattr(enemies[1], 'y'), getattr(enemies[2], 'y'), getattr(enemies[3], 'y'), getattr(enemies[4], 'y')])
+        printval.sort()
+        print(printval, end='\r',flush=True)
+
+        if level > 1:
+            player.cool_down_counter = 0
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -97,26 +104,26 @@ def game(enemy_no, level_quit):
                 enemies.remove(enemy)
 
         keys = pygame.key.get_pressed()
-        playerCoord = [player_initx,player_inity,player.angle]
-        enemyCoord = [enemy.x,enemy.y]
-
-        fuzzy_lead = leadFIS(enemyCoord)
-        fuzzy_sys = steerFIS(playerCoord, fuzzy_lead.enemy)
-        angleUpdate = fuzzy_sys.fuzzy_system()
-
-        player.angle += angleUpdate*(-1)
-
-        fuzzy_shoot = fireFIS(angleUpdate, fuzzy_lead.enemy)
-
-        if fuzzy_shoot.fire > 8:
-            player.shoot()
+        # playerCoord = [player_initx,player_inity,player.angle]
+        # enemyCoord = [enemy.x,enemy.y]
+        #
+        # fuzzy_lead = leadFIS(enemyCoord)
+        # fuzzy_sys = steerFIS(playerCoord, fuzzy_lead.enemy)
+        # angleUpdate = fuzzy_sys.fuzzy_system()
+        #
+        # player.angle += angleUpdate*(-1)
+        #
+        # fuzzy_shoot = fireFIS(angleUpdate, fuzzy_lead.enemy)
+        # if fuzzy_shoot.fire > 8:
+        #     player.shoot()
+        fitness_val = player.move_lasers(-laser_vel, enemies)
         if keys[pygame.K_LEFT]:
             player.angle += 1
         if keys[pygame.K_RIGHT]:
             player.angle -= 1
-
         if keys[pygame.K_SPACE]:
             player.shoot()
-        fitness_val = player.move_lasers(-laser_vel, enemies)
+
+
 if __name__ == "__main__":
-    game()
+    game(enemy_no, level_quit)

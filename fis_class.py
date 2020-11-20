@@ -140,6 +140,7 @@ class leadFIS:
         in25 = MF2.rshlder(inMF_values2[4])
 
         R = Rulebase()
+
         # R1 = [R.AND_rule([in11, in21]), R.AND_rule([in12, in21]), R.AND_rule([in13, in21]), R.AND_rule([in14, in21]), R.AND_rule([in15, in21])]
         # R2 = [R.AND_rule([in11, in22]), R.AND_rule([in12, in22]), R.AND_rule([in13, in22]), R.AND_rule([in14, in22]), R.AND_rule([in15, in22])]
         # R3 = [R.AND_rule([in11, in23]), R.AND_rule([in12, in23]), R.AND_rule([in13, in23]), R.AND_rule([in14, in23]), R.AND_rule([in15, in23])]
