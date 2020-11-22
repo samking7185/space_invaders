@@ -20,7 +20,6 @@ from fis_class import *
 
 def processGene(gene, N):
     allele = gene[0].tolist()
-
     gene_pieces = []
     Nvals = np.cumsum(N)
     Nvals = Nvals.tolist()
