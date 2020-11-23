@@ -32,6 +32,7 @@ def processGene(gene, N):
     return gene_pieces
 
 def game(enemy_no, level_quit, gene, N):
+    timer = 0
     fitness = []
     run = True
     FPS = 60
@@ -49,8 +50,8 @@ def game(enemy_no, level_quit, gene, N):
     player_initx = 350
     player_inity = 630
     player = Player(player_initx,player_inity)
-
-    player.cool_down_counter = 0
+    check = 0
+    # player.cool_down_counter = 0
     lost = False
     lost_count = 0
 
@@ -74,6 +75,7 @@ def game(enemy_no, level_quit, gene, N):
 
     while run:
         clock.tick(FPS)
+        timer += 1
         # time.sleep(2)
         redraw_window()
 
@@ -92,7 +94,7 @@ def game(enemy_no, level_quit, gene, N):
             for i in range(enemy_no):
                 enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 10), random.choice(["red", "blue", "green"]))
                 enemies.append(enemy)
-            player.cool_down_counter = 0
+            # player.cool_down_counter = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
@@ -104,7 +106,7 @@ def game(enemy_no, level_quit, gene, N):
                 enemies.remove(enemy)
 
         if level >= level_quit:
-            return player.fitness
+            return np.divide(player.fitness,timer)
             quit()
 
         keys = pygame.key.get_pressed()
@@ -113,15 +115,14 @@ def game(enemy_no, level_quit, gene, N):
 
         gene_pieces = processGene(gene, N)
         fuzzy_lead = leadFIS(enemyCoord, gene_pieces)
-        # print(fuzzy_lead.enemy)
         fuzzy_sys = steerFIS(playerCoord, fuzzy_lead.enemy)
         angleUpdate = fuzzy_sys.fuzzy_system()
         player.angle += angleUpdate*(-1)
-
         fuzzy_shoot = fireFIS(angleUpdate, fuzzy_lead.enemy, gene_pieces)
-
         if fuzzy_shoot.fire > 8:
             player.shoot()
+            check = 11
+
         if keys[pygame.K_LEFT]:
             player.angle += 1
         if keys[pygame.K_RIGHT]:
@@ -129,4 +130,8 @@ def game(enemy_no, level_quit, gene, N):
 
         if keys[pygame.K_SPACE]:
             player.shoot()
+            check = 11
+
+        if len(player.lasers) == 0 and check == 11:
+            break
         fitness_val = player.move_lasers(-laser_vel, enemies)

@@ -4,7 +4,7 @@ import time
 from fitnessFunc import *
 import sys
 class GA:
-    def __init__(self,M, MaxGen, Pc, Pm, Er, n, UB, LB, type, enemy, level_quit):
+    def __init__(self,M, MaxGen, Pc, Pm, Er, n, UB, LB, type, enemy, level_quit, iterations):
         self.M = M
         self.MaxGen = MaxGen
         self.Pc = Pc
@@ -15,8 +15,9 @@ class GA:
         self.LB = LB
         self.type = type
         self.BestGene = None
+        self.Fitness = []
         self.Chromosome = self.initChromosome()
-        self.evolution(enemy, level_quit)
+        self.evolution(enemy, level_quit, iterations)
         # self.selection()
         # self.crossover()
         # self.mutation()
@@ -31,11 +32,11 @@ class GA:
             self.child1 = None
             self.child2 = None
 
-    def evolution(self, enemy, level_quit):
+    def evolution(self, enemy, level_quit, iterations):
         self.initialization()
 
         for idx in range(self.M):
-            self.fitnessFunc(enemy, level_quit, idx, None)
+            self.fitnessFunc(enemy, level_quit, idx, None, iterations)
         for idxm in range(1,self.MaxGen):
             for k in range(0,self.M,2):
                 self.selection()
@@ -45,38 +46,40 @@ class GA:
                 self.Chromosome.newPopulation[k+1, 0] = np.array(self.Chromosome.child2)
 
             for i in range(self.M):
-                self.fitnessFunc(enemy, level_quit, i, 'New')
+                self.fitnessFunc(enemy, level_quit, i, 'New', iterations)
             self.elitism()
             self.Chromosome.population = self.Chromosome.newPopulation2
-            print(self.Chromosome.population[:,1])
-            # max_fit = np.amax(self.Chromosome.population[:,1])
-            # print(max_fit)
+            self.Fitness.append(self.Chromosome.population[0,1])
+            print('------------------------------------')
+            print('Generation: ' + str(idxm))
+            print(self.Chromosome.population[0,1])
+            print(self.Chromosome.population[0,0])
 
         for idx in range(self.M):
-            self.fitnessFunc(enemy, level_quit, k, None)
+            self.fitnessFunc(enemy, level_quit, k, None, iterations)
         self.Chromosome.population = self.Chromosome.population.tolist()
         self.Chromosome.population.sort(reverse=True, key=lambda x: x[1])
         self.BestChrom = self.Chromosome.population[0]
 
-    def fitnessFunc(self, enemy, level_quit, ind, gene):
+    def fitnessFunc(self, enemy, level_quit, ind, gene, iterations):
         fit_list = []
         if gene == 'Best':
-            for i in range(5):
+            for i in range(iterations):
                 fit = game(enemy, level_quit, gene, self.N)
                 fit_list.append(fit)
             # fit_value = np.random.randint(1, 100)
         elif gene == 'New':
-            for i in range(5):
+            for i in range(iterations):
                 fit = game(enemy, level_quit, self.Chromosome.newPopulation[ind], self.n)
                 fit_list.append(fit)
             # fit_value = np.random.randint(1, 100)
         else:
-            for i in range(5):
+            for i in range(iterations):
                 fit = game(enemy, level_quit, self.Chromosome.population[ind], self.n)
                 fit_list.append(fit)
 
             # fit_value = np.random.randint(1, 100)
-        fitness_array = fit_list
+        # fitness_array = fit_list
         # fitness_array = []
         #
         # fit = np.array(fit)
@@ -90,13 +93,14 @@ class GA:
         #     fitness_array.append(list(map(int, fit_array)))
         # fitness_array.append(list(map(int, fit[idx[-1]+1:])))
         trimmed_fitness = []
-        for lst in fitness_array:
-            if lst:
-                if lst == [-50]:
-                    temp = -50
-                else:
-                    temp = np.amax(lst)
-                trimmed_fitness.append(temp)
+
+        for lst in fit_list:
+            if lst is None:
+                continue
+            elif len(lst)==0:
+                continue
+            else:
+                trimmed_fitness.append(np.amax(lst))
         fit_value = np.sum(trimmed_fitness)
         if gene == 'Best' :
             return fit_value

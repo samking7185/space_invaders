@@ -60,6 +60,7 @@ class Laser:
         return collide_buffer(self, obj)
 
 class Player:
+    COOLDOWN = 200
     def __init__(self,x,y,health=100, angle=0):
         self.ship_img = YELLOW_SPACE_SHIP
         self.laser_img = YELLOW_LASER
@@ -78,6 +79,12 @@ class Player:
 
     def get_height(self):
         return self.ship_img.get_height()
+
+    def cooldown(self):
+        if self.cool_down_counter >= self.COOLDOWN:
+            self.cool_down_counter = 0
+        elif self.cool_down_counter > 0:
+            self.cool_down_counter += 1
 
     def shoot(self):
         if self.cool_down_counter == 0:
@@ -100,6 +107,7 @@ class Player:
             laser.draw(window)
 
     def move_lasers(self, vel, objs):
+        # self.cooldown()
         for (index,tuple) in enumerate(self.lasers):
             laserangle = tuple[1]
             laser = tuple[0]
@@ -133,6 +141,7 @@ class Player:
                 return final_fit
 
 class Enemy():
+    COOLDOWN = 100
     COLOR_MAP = {
                 "red": (RED_SPACE_SHIP, RED_LASER),
                 "blue": (BLUE_SPACE_SHIP, BLUE_LASER),
@@ -169,20 +178,6 @@ class Enemy():
 
     def get_height(self):
         return self.ship_img.get_height()
-
-    def cooldown(self):
-        if self.cool_down_counter >= self.COOLDOWN:
-            self.cool_down_counter = 0
-        elif self.cool_down_counter > 0:
-            self.cool_down_counter += 1
-
-    def shoot(self):
-        if self.cool_down_counter == 0:
-            laser = Laser(self.x, self.y, self.laser_img)
-            laser_obj = (laser,self.angle)
-            self.lasers.append(laser_obj)
-            self.cool_down_counter = 1
-            self.fitness.append('s')
 
 def collide(obj1, obj2):
     offset_x = obj2.x - obj1.x
