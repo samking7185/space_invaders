@@ -43,6 +43,7 @@ def game(enemy_no, level_quit, gene, N, indices, iterations):
     lost_font = pygame.font.SysFont("comicsans", 60)
 
     enemies = []
+    enemiesFIS = []
     wave_length = 0
     enemy_vel = 1
     player_vel = 5
@@ -93,13 +94,16 @@ def game(enemy_no, level_quit, gene, N, indices, iterations):
             level += 1
             if iterations:
                 for i in range(enemy_no):
-                    enemyCoord = np.linspace(10, WIDTH-10, num=iterations, dtype='int')
-                    enemy = Enemy(enemyCoord[indices], 5, random.choice(["red", "blue", "green"]))
+                    # enemyCoord = np.linspace(10, WIDTH-10, num=iterations, dtype='int')
+                    # enemy = Enemy(enemyCoord[indices], 5, random.choice(["red", "blue", "green"]))
+                    enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 10), random.choice(["red", "blue", "green"]))
                     enemies.append(enemy)
             else:
                 for i in range(enemy_no):
                     enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 10), random.choice(["red", "blue", "green"]))
                     enemies.append(enemy)
+        threat = threatFIS(enemies, player, 0)
+        threatMat = threat.sortEnemy()
             # player.cool_down_counter = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -118,9 +122,9 @@ def game(enemy_no, level_quit, gene, N, indices, iterations):
         keys = pygame.key.get_pressed()
         playerCoord = [player_initx,player_inity,player.angle]
         enemyCoord = [enemy.x,enemy.y]
-
         gene_pieces = processGene(gene, N)
-        fuzzy_lead = leadFIS(enemyCoord, gene_pieces)
+        # fuzzy_lead = leadFIS(enemyCoord, gene_pieces)
+        fuzzy_lead = leadFIS(threatMat[0], gene_pieces)
         fuzzy_sys = steerFIS(playerCoord, fuzzy_lead.enemy)
         angleUpdate = fuzzy_sys.fuzzy_system()
         player.angle += angleUpdate*(-1)
@@ -138,6 +142,6 @@ def game(enemy_no, level_quit, gene, N, indices, iterations):
             player.shoot()
             check = 11
 
-        if len(player.lasers) == 0 and check == 11:
-            break
+        # if len(player.lasers) == 0 and check == 11:
+        #     break
         fitness_val = player.move_lasers(-laser_vel, enemies)

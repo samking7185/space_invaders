@@ -17,7 +17,7 @@ LB = [0,  0,  -5, 0 , 1,  1, -0.5, 1]
 
 type = ['int','int','int','int','int','int','float','int']
 
-enemy_no = 1
+enemy_no = 5
 level_quit = 2
 iterations = 10
 

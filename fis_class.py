@@ -317,19 +317,23 @@ class threatFIS:
 
     def sortEnemy(self):
         enemies = self.enemies
+        enemyArr = []
+        for i in range(len(enemies)):
+            enemyArr.append([getattr(enemies[i], 'x'), getattr(enemies[i], 'y')])
+
         player = [self.player.x, self.player.y]
 
-        minX = enemies.index(min(enemies, key=lambda x: x[0]))
-        maxX = enemies.index(max(enemies, key=lambda x: x[0]))
+        minX = enemyArr.index(min(enemyArr, key=lambda x: x[0]))
+        maxX = enemyArr.index(max(enemyArr, key=lambda x: x[0]))
 
-        minCoords = [enemies[minX], enemies[maxX]]
+        minCoords = [enemyArr[minX], enemyArr[maxX]]
         firstInd = minCoords.index(max(minCoords, key=lambda x: x[1]))
         firstEnemy = minCoords[firstInd]
 
         if firstInd == 0:
-            enemiesSorted = sorted(enemies, key=itemgetter(0))
+            enemiesSorted = sorted(enemyArr, key=itemgetter(0))
         else:
-            enemiesSorted = sorted(enemies, key=itemgetter(0), reverse=True)
+            enemiesSorted = sorted(enemyArr, key=itemgetter(0), reverse=True)
         return enemiesSorted
         # enemyAngles = []
         # for i in range(len(enemies)):
