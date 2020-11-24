@@ -5,6 +5,8 @@ import os
 import time
 import random
 import sys
+from operator import itemgetter
+
 class steerFIS:
     def __init__(self, player, enemy):
         # player is the coordinates and angle of the player character
@@ -292,3 +294,44 @@ class fireFIS:
         fz = Defuzz(MU, outMF_values)
         command = fz.defuzz_out()
         self.fire = command
+
+class threatFIS:
+    def __init__(self, enemies, player, gene):
+        self.enemies = enemies
+        self.player = player
+        self.gene = gene
+        self.sortEnemy()
+
+    def calcAngle(self, player, enemy):
+        X1 = player[0]; Y1 = player[1]
+        X2 = enemy[0];  Y2 = enemy[1]
+
+        X = X1-X2
+        Y = Y1-Y2
+        # angle is in degrees
+        if Y == 0:
+            angle = np.arctan(X/0.001) * 180/np.pi
+        else:
+            angle = np.arctan(X/Y) * 180/np.pi
+        return angle
+
+    def sortEnemy(self):
+        enemies = self.enemies
+        player = [self.player.x, self.player.y]
+
+        minX = enemies.index(min(enemies, key=lambda x: x[0]))
+        maxX = enemies.index(max(enemies, key=lambda x: x[0]))
+
+        minCoords = [enemies[minX], enemies[maxX]]
+        firstInd = minCoords.index(max(minCoords, key=lambda x: x[1]))
+        firstEnemy = minCoords[firstInd]
+
+        if firstInd == 0:
+            enemiesSorted = sorted(enemies, key=itemgetter(0))
+        else:
+            enemiesSorted = sorted(enemies, key=itemgetter(0), reverse=True)
+        return enemiesSorted
+        # enemyAngles = []
+        # for i in range(len(enemies)):
+        #     enemyAngles.append(self.calcAngle(player, enemies[i]))
+        # difAngles = enemyAngles - enemyAngles[firstInd]

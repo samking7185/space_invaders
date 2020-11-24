@@ -34,17 +34,16 @@ class GA:
 
     def evolution(self, enemy, level_quit, iterations):
         self.initialization()
-
         for idx in range(self.M):
             self.fitnessFunc(enemy, level_quit, idx, None, iterations)
         for idxm in range(1,self.MaxGen):
             for k in range(0,self.M,2):
+
                 self.selection()
                 self.crossover()
                 self.mutation()
                 self.Chromosome.newPopulation[k, 0] = np.array(self.Chromosome.child1)
                 self.Chromosome.newPopulation[k+1, 0] = np.array(self.Chromosome.child2)
-
             for i in range(self.M):
                 self.fitnessFunc(enemy, level_quit, i, 'New', iterations)
             self.elitism()
@@ -65,35 +64,18 @@ class GA:
         fit_list = []
         if gene == 'Best':
             for i in range(iterations):
-                fit = game(enemy, level_quit, gene, self.N)
+                fit = game(enemy, level_quit, gene, self.N, None, None)
                 fit_list.append(fit)
-            # fit_value = np.random.randint(1, 100)
         elif gene == 'New':
             for i in range(iterations):
-                fit = game(enemy, level_quit, self.Chromosome.newPopulation[ind], self.n)
+                fit = game(enemy, level_quit, self.Chromosome.newPopulation[ind], self.n, i, iterations)
                 fit_list.append(fit)
-            # fit_value = np.random.randint(1, 100)
         else:
             for i in range(iterations):
-                fit = game(enemy, level_quit, self.Chromosome.population[ind], self.n)
+                fit = game(enemy, level_quit, self.Chromosome.population[ind], self.n, i, iterations)
                 fit_list.append(fit)
 
-            # fit_value = np.random.randint(1, 100)
-        # fitness_array = fit_list
-        # fitness_array = []
-        #
-        # fit = np.array(fit)
-        # searchval = 's'
-        # idx = np.where(fit == searchval)[0]
-        # idx = idx.tolist()
-        # fit = fit.tolist()
-        #
-        # for val in range(len(idx)-1):
-        #     fit_array = fit[idx[val]+1:idx[val+1]]
-        #     fitness_array.append(list(map(int, fit_array)))
-        # fitness_array.append(list(map(int, fit[idx[-1]+1:])))
         trimmed_fitness = []
-
         for lst in fit_list:
             if lst is None:
                 continue
@@ -102,6 +84,7 @@ class GA:
             else:
                 trimmed_fitness.append(np.amax(lst))
         fit_value = np.sum(trimmed_fitness)
+
         if gene == 'Best' :
             return fit_value
         elif gene == 'New':

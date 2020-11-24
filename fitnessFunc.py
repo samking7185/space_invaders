@@ -31,7 +31,7 @@ def processGene(gene, N):
         gene_pieces.append(val)
     return gene_pieces
 
-def game(enemy_no, level_quit, gene, N):
+def game(enemy_no, level_quit, gene, N, indices, iterations):
     timer = 0
     fitness = []
     run = True
@@ -91,9 +91,15 @@ def game(enemy_no, level_quit, gene, N):
 
         if len(enemies) == 0:
             level += 1
-            for i in range(enemy_no):
-                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 10), random.choice(["red", "blue", "green"]))
-                enemies.append(enemy)
+            if iterations:
+                for i in range(enemy_no):
+                    enemyCoord = np.linspace(10, WIDTH-10, num=iterations, dtype='int')
+                    enemy = Enemy(enemyCoord[indices], 5, random.choice(["red", "blue", "green"]))
+                    enemies.append(enemy)
+            else:
+                for i in range(enemy_no):
+                    enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 10), random.choice(["red", "blue", "green"]))
+                    enemies.append(enemy)
             # player.cool_down_counter = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

@@ -5,7 +5,7 @@ from fitnessFunc import *
 import matplotlib.pyplot as plt
 
 # M must be even number
-M = 6
+M = 50
 MaxGen = 5
 Pc = 0.8
 Pm = 0.2

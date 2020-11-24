@@ -31,6 +31,7 @@ def game(enemy_no, level_quit):
     lost_font = pygame.font.SysFont("comicsans", 60)
 
     enemies = []
+    enemiesFIS = []
     wave_length = 0
     enemy_vel = 1
     player_vel = 5
@@ -81,10 +82,10 @@ def game(enemy_no, level_quit):
             for i in range(wave_length):
                 enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 50), random.choice(["red", "blue", "green"]))
                 enemies.append(enemy)
-
-        printval = np.array([getattr(enemies[0], 'y'), getattr(enemies[1], 'y'), getattr(enemies[2], 'y'), getattr(enemies[3], 'y'), getattr(enemies[4], 'y')])
-        printval.sort()
-        print(printval, end='\r',flush=True)
+                enemiesFIS.append([enemy.x, enemy.y])
+        # printval = np.array([getattr(enemies[0], 'y'), getattr(enemies[1], 'y'), getattr(enemies[2], 'y'), getattr(enemies[3], 'y'), getattr(enemies[4], 'y')])
+        threat = threatFIS(enemiesFIS, player, 0)
+        threatMat = threat.sortEnemy()
 
         if level > 1:
             player.cool_down_counter = 0
