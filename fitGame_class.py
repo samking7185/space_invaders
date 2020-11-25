@@ -60,7 +60,7 @@ class Laser:
         return collide_buffer(self, obj)
 
 class Player:
-    COOLDOWN = 200
+    COOLDOWN = 50
     def __init__(self,x,y,health=100, angle=0):
         self.ship_img = YELLOW_SPACE_SHIP
         self.laser_img = YELLOW_LASER

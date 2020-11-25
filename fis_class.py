@@ -300,14 +300,16 @@ class threatFIS:
         self.enemies = enemies
         self.player = player
         self.gene = gene
+        self.sortAngles = None
+        self.sortY = None
         self.sortEnemy()
 
-    def calcAngle(self, player, enemy):
-        X1 = player[0]; Y1 = player[1]
+    def calcAngle(self, enemy):
+        X1 = self.player.x; Y1 = self.player.y
         X2 = enemy[0];  Y2 = enemy[1]
 
-        X = X1-X2
-        Y = Y1-Y2
+        X = X2-X1
+        Y = Y2-Y1
         # angle is in degrees
         if Y == 0:
             angle = np.arctan(X/0.001) * 180/np.pi
@@ -317,25 +319,105 @@ class threatFIS:
 
     def sortEnemy(self):
         enemies = self.enemies
+        player = self.player
         enemyArr = []
+        enemyArrY = []
         for i in range(len(enemies)):
             enemyArr.append([getattr(enemies[i], 'x'), getattr(enemies[i], 'y')])
+            enemyArrY.append(getattr(enemies[i], 'y'))
+        self.sortY = enemyArrY
+        enemyAngles = []
+        for i in range(len(enemies)):
+            enemyAngles.append(self.calcAngle(enemyArr[i]))
+        self.sortAngles = [x - player.angle for x in enemyAngles]
+        # minX = enemyArr.index(min(enemyArr, key=lambda x: x[0]))
+        # maxX = enemyArr.index(max(enemyArr, key=lambda x: x[0]))
+        #
+        # minCoords = [enemyArr[minX], enemyArr[maxX]]
+        # firstInd = minCoords.index(max(minCoords, key=lambda x: x[1]))
+        # firstEnemy = minCoords[firstInd]
 
-        player = [self.player.x, self.player.y]
+        # if firstInd == 0:
+        #     enemiesSorted = sorted(enemyArr, key=itemgetter(0))
+        # else:
+        #     enemiesSorted = sorted(enemyArr, key=itemgetter(0), reverse=True)
+        # return enemiesSorted
 
-        minX = enemyArr.index(min(enemyArr, key=lambda x: x[0]))
-        maxX = enemyArr.index(max(enemyArr, key=lambda x: x[0]))
+    def fuzzy_system(self):
+        enemies = self.enemies
+        enemyY = self.sortY
+        angle = self.sortAngles
+        enemyFinal = []
+        Gin1 = np.array(self.gene[8]) * 25
+        Gin1 = Gin1.tolist()
 
-        minCoords = [enemyArr[minX], enemyArr[maxX]]
-        firstInd = minCoords.index(max(minCoords, key=lambda x: x[1]))
-        firstEnemy = minCoords[firstInd]
+        Gin2 = np.array(self.gene[9])
+        Gin2 = Gin2.tolist()
 
-        if firstInd == 0:
-            enemiesSorted = sorted(enemyArr, key=itemgetter(0))
-        else:
-            enemiesSorted = sorted(enemyArr, key=itemgetter(0), reverse=True)
-        return enemiesSorted
-        # enemyAngles = []
-        # for i in range(len(enemies)):
-        #     enemyAngles.append(self.calcAngle(player, enemies[i]))
-        # difAngles = enemyAngles - enemyAngles[firstInd]
+        Grules = self.gene[10]
+
+        for i in range(len(enemyY)):
+            MF1 = Membership(enemyY[i])
+            MF2 = Membership(angle[i])
+
+            inMF_values1 = [sorted((0, Gin1[0], Gin1[1])),
+                            sorted((Gin1[2], Gin1[3], Gin1[4])),
+                            sorted((Gin1[5], Gin1[6], Gin1[7])),
+                            sorted((Gin1[8], Gin1[9], Gin1[10])),
+                            sorted((Gin1[11], Gin1[12], 800))]
+
+            inMF_values2 = [sorted((Gin2[0], Gin2[1], Gin2[2])),
+                            sorted((Gin2[3], Gin2[4], Gin2[5])),
+                            sorted((Gin2[6], Gin2[7], Gin2[8])),
+                            sorted((Gin2[9], Gin2[10], Gin2[11])),
+                            sorted((Gin2[12], Gin2[13], Gin2[14]))]
+
+            outMF_values = [(0,1,2),(2,3,4),(4,5,6)]
+
+            in11 = MF1.lshlder(inMF_values1[0])
+            in12 = MF1.triangle(inMF_values1[1])
+            in13 = MF1.triangle(inMF_values1[2])
+            in14 = MF1.triangle(inMF_values1[3])
+            in15 = MF1.rshlder(inMF_values1[4])
+
+            in21 = MF2.lshlder(inMF_values2[0])
+            in22 = MF2.triangle(inMF_values2[1])
+            in23 = MF2.triangle(inMF_values2[2])
+            in24 = MF2.triangle(inMF_values2[3])
+            in25 = MF2.rshlder(inMF_values2[4])
+
+            R = Rulebase()
+
+            Rules = [
+                R.AND_rule([in11, in21]), R.AND_rule([in12, in21]), R.AND_rule([in13, in21]), R.AND_rule([in14, in21]), R.AND_rule([in15, in21]),
+                R.AND_rule([in11, in22]), R.AND_rule([in12, in22]), R.AND_rule([in13, in22]), R.AND_rule([in14, in22]), R.AND_rule([in15, in22]),
+                R.AND_rule([in11, in23]), R.AND_rule([in12, in23]), R.AND_rule([in13, in23]), R.AND_rule([in14, in23]), R.AND_rule([in15, in23]),
+                R.AND_rule([in11, in24]), R.AND_rule([in12, in24]), R.AND_rule([in13, in24]), R.AND_rule([in14, in24]), R.AND_rule([in15, in24]),
+                R.AND_rule([in11, in25]), R.AND_rule([in12, in25]), R.AND_rule([in13, in25]), R.AND_rule([in14, in25]), R.AND_rule([in15, in25])
+                ]
+
+            R1 = []
+            R2 = []
+            R3 = []
+
+            for idx, rule in enumerate(Grules):
+                if rule == 1.0:
+                    R1.append(Rules[idx])
+                elif rule == 2.0:
+                    R2.append(Rules[idx])
+                elif rule == 3.0:
+                    R3.append(Rules[idx])
+
+            R11 = R.OR_rule(R1)
+            R22 = R.OR_rule(R2)
+            R33 = R.OR_rule(R3)
+
+            MU = [R11, R22, R33]
+            maxMu = MU.index(max(MU))
+            enemyFinal.append(maxMu)
+
+        zipped_lists = zip(enemyFinal, enemies)
+        enemyOut = sorted(zipped_lists, key=lambda x: x[0])
+        enemyOutObj = [x[1] for x in enemyOut]
+        enemyOutCoord = [[x.x, x.y] for x in enemyOutObj]
+        return enemyOutCoord
