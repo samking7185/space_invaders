@@ -38,7 +38,6 @@ class GA:
             self.fitnessFunc(enemy, level_quit, idx, None, iterations)
         for idxm in range(1,self.MaxGen):
             for k in range(0,self.M,2):
-
                 self.selection()
                 self.crossover()
                 self.mutation()

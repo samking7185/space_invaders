@@ -94,9 +94,8 @@ def game(enemy_no, level_quit, gene, N, indices, iterations):
             level += 1
             if iterations:
                 for i in range(enemy_no):
-                    # enemyCoord = np.linspace(10, WIDTH-10, num=iterations, dtype='int')
-                    # enemy = Enemy(enemyCoord[indices], 5, random.choice(["red", "blue", "green"]))
-                    enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 10), random.choice(["red", "blue", "green"]))
+                    enemyCoord = np.linspace(50, WIDTH-50, num=iterations, dtype='int')
+                    enemy = Enemy(enemyCoord[indices], 5, random.choice(["red", "blue", "green"]))
                     enemies.append(enemy)
             else:
                 for i in range(enemy_no):
@@ -129,7 +128,7 @@ def game(enemy_no, level_quit, gene, N, indices, iterations):
         angleUpdate = fuzzy_sys.fuzzy_system()
         player.angle += angleUpdate*(-1)
         fuzzy_shoot = fireFIS(angleUpdate, fuzzy_lead.enemy, gene_pieces)
-        if fuzzy_shoot.fire > 8:
+        if fuzzy_shoot.fire > 7:
             player.shoot()
             check = 11
 
@@ -142,6 +141,6 @@ def game(enemy_no, level_quit, gene, N, indices, iterations):
             player.shoot()
             check = 11
 
-        # if len(player.lasers) == 0 and check == 11:
-        #     break
+        if len(player.lasers) == 0 and check == 11:
+            break
         fitness_val = player.move_lasers(-laser_vel, enemies)

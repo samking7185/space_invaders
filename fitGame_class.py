@@ -107,7 +107,7 @@ class Player:
             laser.draw(window)
 
     def move_lasers(self, vel, objs):
-        self.cooldown()
+        # self.cooldown()
         for (index,tuple) in enumerate(self.lasers):
             laserangle = tuple[1]
             laser = tuple[0]

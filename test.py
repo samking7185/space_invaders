@@ -2,11 +2,11 @@ from GA import *
 import numpy as np
 from fuzzy import *
 from fitnessFunc import *
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 # M must be even number
 M = 50
-MaxGen = 5
+MaxGen = 100
 Pc = 0.8
 Pm = 0.2
 Er = 0.1
@@ -17,7 +17,7 @@ LB = [0,  0,  -5, 0 , 1,  1, -0.5, 1]
 
 type = ['int','int','int','int','int','int','float','int']
 
-enemy_no = 5
+enemy_no = 1
 level_quit = 2
 iterations = 10
 

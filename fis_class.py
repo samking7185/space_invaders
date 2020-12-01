@@ -243,9 +243,9 @@ class fireFIS:
 
         in31 = MF3.triangle(inMF_values3[0])
         in32 = MF3.triangle(inMF_values3[1])
-        in33 = MF3.rshlder(inMF_values3[2])
-        in34 = MF3.rshlder(inMF_values3[3])
-        in35 = MF3.rshlder(inMF_values3[4])
+        in33 = MF3.triangle(inMF_values3[2])
+        in34 = MF3.triangle(inMF_values3[3])
+        in35 = MF3.triangle(inMF_values3[4])
 
         R = Rulebase()
         Rules = [
