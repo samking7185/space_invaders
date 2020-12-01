@@ -52,7 +52,6 @@ def game(enemy_no, level_quit, gene, N, indices, iterations):
     player_inity = 630
     player = Player(player_initx,player_inity)
     check = 0
-    # player.cool_down_counter = 0
     lost = False
     lost_count = 0
 
@@ -105,8 +104,8 @@ def game(enemy_no, level_quit, gene, N, indices, iterations):
                     enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 10), random.choice(["red", "blue", "green"]))
                     enemies.append(enemy)
         gene_pieces = processGene(gene, N)
-        threat = threatFIS(enemies, player, gene_pieces)
-        threatMat = threat.fuzzy_system()
+        # threat = threatFIS(enemies, player, gene_pieces)
+        # threatMat = threat.fuzzy_system()
 
         # player.cool_down_counter = 0
 
@@ -126,28 +125,37 @@ def game(enemy_no, level_quit, gene, N, indices, iterations):
 
         keys = pygame.key.get_pressed()
         playerCoord = [player_initx,player_inity,player.angle]
-        # enemyCoord = [enemy.x,enemy.y]
-        enemyCoord = threatMat[0]
-        # fuzzy_lead = leadFIS(enemyCoord, gene_pieces)
+        enemyCoord = [enemy.x,enemy.y]
+        # enemyCoord = threatMat[0]
         fuzzy_lead = leadFIS(enemyCoord, gene_pieces)
+
         fuzzy_sys = steerFIS(playerCoord, fuzzy_lead.enemy)
         angleUpdate = fuzzy_sys.fuzzy_system()
         player.angle += angleUpdate*(-1)
-        fuzzy_shoot = fireFIS(angleUpdate, fuzzy_lead.enemy, gene_pieces)
-        # if fuzzy_shoot.fire > 8:
-        #     player.shoot()
-        #     print('--------------------S------------------')
-        #     check = 11
+        playerAngle = fuzzy_sys.player[2] - fuzzy_sys.angle
+        # if playerAngle > 0:
+        #     player.angle += -1
+        # elif playerAngle < 0:
+        #     player.angle += 1
 
+        fuzzy_shoot = fireFIS(angleUpdate, fuzzy_lead.enemy, gene_pieces)
+        print([angleUpdate, fuzzy_shoot.fire])
+        if fuzzy_shoot.fire > 5.5:
+            player.shoot()
+            print('--------------------S------------------')
+            check = 11
+        if keys[pygame.K_UP]:
+            breakpoint()
         if keys[pygame.K_LEFT]:
             player.angle += 1
         if keys[pygame.K_RIGHT]:
             player.angle -= 1
 
         if keys[pygame.K_SPACE]:
+            print('--------------------S------------------')
             player.shoot()
             check = 11
 
-        # if len(player.lasers) == 0 and check == 11:
-        #     break
+        if len(player.lasers) == 0 and check == 11:
+            break
         fitness_val = player.move_lasers(-laser_vel, enemies)

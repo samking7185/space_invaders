@@ -46,11 +46,11 @@ class steerFIS:
                      (0,30,60),
                      (30,60,90)]
 
-        outMF_values = [(-3,-2,-1),
-                     (-2,-1,0),
-                     (-1,0,1),
-                     (0,1,2),
-                     (1,2,3)]
+        outMF_values = [(-6,-5,-4),
+                     (-4,-3,-2),
+                     (-2,0,2),
+                     (2,3,4),
+                     (4,5,6)]
 
         in1 = MF.lshlder(inMF_values[0])
         in2 = MF.triangle(inMF_values[1])
@@ -58,10 +58,8 @@ class steerFIS:
         in4 = MF.triangle(inMF_values[3])
         in5 = MF.rshlder(inMF_values[4])
         MU = [in1,in2,in3,in4,in5]
-
         fz = Defuzz(MU, outMF_values)
         command = fz.defuzz_out()
-        # print(command)
         return command
 
 class leadFIS:
@@ -202,8 +200,7 @@ class fireFIS:
         MF2 = Membership(enemyY)
         MF3 = Membership(angle)
 
-        Gin3 = sorted(self.gene[6])
-
+        Gin3 = self.gene[6]
         Grules = self.gene[7]
 
         inMF_values1 = [(0, 100, 200),
@@ -228,7 +225,6 @@ class fireFIS:
 
         outMF_values = [(0,1,2),(8,9,10)]
 
-
         in11 = MF1.lshlder(inMF_values1[0])
         in12 = MF1.triangle(inMF_values1[1])
         in13 = MF1.triangle(inMF_values1[2])
@@ -243,9 +239,9 @@ class fireFIS:
 
         in31 = MF3.triangle(inMF_values3[0])
         in32 = MF3.triangle(inMF_values3[1])
-        in33 = MF3.rshlder(inMF_values3[2])
-        in34 = MF3.rshlder(inMF_values3[3])
-        in35 = MF3.rshlder(inMF_values3[4])
+        in33 = MF3.triangle(inMF_values3[2])
+        in34 = MF3.triangle(inMF_values3[3])
+        in35 = MF3.triangle(inMF_values3[4])
 
         R = Rulebase()
         Rules = [
@@ -276,6 +272,7 @@ class fireFIS:
         R.AND_rule([in11, in25, in35]), R.AND_rule([in12, in25, in35]), R.AND_rule([in13, in25, in35]), R.AND_rule([in14, in25, in35]), R.AND_rule([in15, in25, in35]),
         R.AND_rule([in11, in21, in35]), R.AND_rule([in12, in21, in35])
         ]
+
 
         R1 = []
         R2 = []
