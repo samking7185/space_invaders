@@ -31,7 +31,25 @@ def processGene(gene, N):
         gene_pieces.append(val)
     return gene_pieces
 
-def game(enemy_no, level_quit, gene, N, indices, iterations, start):
+def sortEnemies(enemies):
+
+    enemyArr = []
+    enemyArrY = []
+    for i in range(len(enemies)):
+        enemyArr.append([getattr(enemies[i], 'x'), getattr(enemies[i], 'y')])
+
+    minX = enemyArr.index(min(enemyArr, key=lambda x: x[0]))
+    maxX = enemyArr.index(max(enemyArr, key=lambda x: x[0]))
+
+    minCoords = [enemyArr[minX], enemyArr[maxX]]
+    firstInd = minCoords.index(max(minCoords, key=lambda x: x[1]))
+    firstEnemy = minCoords[firstInd]
+
+    enemiesSorted = sorted(enemyArr, key=itemgetter(0))
+
+    return enemiesSorted
+
+def game(gene, N):
     timer = 0
     fitness = []
     run = True
@@ -52,6 +70,7 @@ def game(enemy_no, level_quit, gene, N, indices, iterations, start):
     player_inity = 630
     player = Player(player_initx,player_inity)
     check = 0
+    enemyInd = 0
     lost = False
     lost_count = 0
 
@@ -82,6 +101,8 @@ def game(enemy_no, level_quit, gene, N, indices, iterations, start):
         if lives <= 0 or player.health <= 0:
             lost = True
             lost_count += 1
+            return [player.fitness ,timer, level]
+            quit()
 
         if lost:
             if lost_count > FPS * 5:
@@ -91,23 +112,16 @@ def game(enemy_no, level_quit, gene, N, indices, iterations, start):
 
         if len(enemies) == 0:
             level += 1
-            if iterations:
-                for i in range(enemy_no):
-                    enemyCoord = np.linspace(start, WIDTH-start, num=iterations, dtype='int')
-                    enemy = Enemy(enemyCoord[indices], 5, random.choice(["red", "green"]))
-                    # enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 50), random.choice(["red", "blue", "green"]))
-                    enemies.append(enemy)
-                    enemiesFIS.append([enemy.x, enemy.y])
-                    checkLength = len(enemies)
-            else:
-                for i in range(enemy_no):
-                    enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 10), random.choice(["red", "blue", "green"]))
-                    enemies.append(enemy)
-        gene_pieces = processGene(gene, N)
-        # threat = threatFIS(enemies, player, gene_pieces)
-        # threatMat = threat.fuzzy_system()
+            wave_length =+ 2
 
-        # player.cool_down_counter = 0
+            for i in range(wave_length):
+                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 50), random.choice(["red", "blue", "green"]))
+                enemies.append(enemy)
+                if enemies:
+                    enemiesFIS.append([enemy.x, enemy.y])
+
+        gene_pieces = processGene(gene, N)
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -119,37 +133,28 @@ def game(enemy_no, level_quit, gene, N, indices, iterations, start):
                 lives -= 1
                 enemies.remove(enemy)
 
-        if level >= level_quit:
-            return np.divide(player.fitness,timer)
-            quit()
-
         keys = pygame.key.get_pressed()
-        playerCoord = [player_initx,player_inity,player.angle]
-        enemyCoord = [enemy.x,enemy.y]
-        # enemyCoord = threatMat[0]
-        fuzzy_lead = leadFIS(enemyCoord, gene_pieces)
-        fuzzy_sys = steerFIS(playerCoord, fuzzy_lead.enemy)
-        angleUpdate = fuzzy_sys.fuzzy_system()
-        player.angle += angleUpdate*(-1)
+        if enemies:
+            playerCoord = [player_initx,player_inity,player.angle]
+            enemyArray = sortEnemies(enemies)
 
-        playerAngle = fuzzy_sys.player[2] - fuzzy_sys.angle
-        #
-        # angleUpdate = playerAngle
-        # if playerAngle > 0:
-        #     player.angle += -1
-        # elif playerAngle < 0:
-        #     player.angle += 1
-        # elif playerAngle == 0:
-        #     player.angle = player.angle
+            # enemyCoord = [enemy.x,enemy.y]
+            enemyCoord = enemyArray[0]
+            fuzzy_lead = leadFIS(enemyCoord, gene_pieces)
+            fuzzy_sys = steerFIS(playerCoord, fuzzy_lead.enemy)
+            angleUpdate = fuzzy_sys.fuzzy_system()
+            player.angle += angleUpdate*(-1)
 
-        fuzzy_shoot = fireFIS(playerAngle, fuzzy_lead.enemy, gene_pieces)
-        if fuzzy_shoot.fire > 5.5:
-            player.shoot()
-            # print('--------------------S------------------')
-            check = 11
-        # if abs(playerAngle) < 0.5:
-        #     player.shoot()
-        #     check = 11
+            playerAngle = fuzzy_sys.player[2] - fuzzy_sys.angle
+
+            if abs(playerAngle) < 0.5:
+                player.shoot()
+                check = 11
+            # fuzzy_shoot = fireFIS(playerAngle, fuzzy_lead.enemy, gene_pieces)
+            # if fuzzy_shoot.fire > 5.5:
+            #     player.shoot()
+            #     check = 11
+
         if keys[pygame.K_UP]:
             breakpoint()
         if keys[pygame.K_LEFT]:
@@ -158,10 +163,7 @@ def game(enemy_no, level_quit, gene, N, indices, iterations, start):
             player.angle -= 1
 
         if keys[pygame.K_SPACE]:
-            # print('--------------------S------------------')
             player.shoot()
             check = 11
 
-        if len(player.lasers) == 0 and check == 11:
-            break
         fitness_val = player.move_lasers(-laser_vel, enemies)

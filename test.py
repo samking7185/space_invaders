@@ -11,17 +11,17 @@ Pc = 0.9
 Pm = 0.3
 Er = 0.05
 
-n =  [13, 13, 9,  9,  25, 25, 15,  125]
-UB = [32, 32, 5,  10, 3,  3,  5, 2]
-LB = [0,  0,  -5, 0 , 1,  1, -5, 1]
+n =  [13, 13, 9,  9,  25, 25]
+UB = [32, 32, 5,  10, 3,  3]
+LB = [0,  0,  -5, 0 , 1,  1]
 
-type = ['int','int','int','int','int','int','int','int']
+type = ['int','int','int','int','int','int']
 
-enemy_no = 1
-level_quit = 2
-iterations = 7
+# enemy_no = 2
+# level_quit = 2
+# iterations = 7
 
-gaTest = GA(M, MaxGen, Pc, Pm, Er, n, UB, LB, type, enemy_no, level_quit, iterations)
+gaTest = GA(M, MaxGen, Pc, Pm, Er, n, UB, LB, type)
 print('--------------------- Best Chromosome ------------------------')
 print(gaTest.BestChrom)
 print(gaTest.Fitness)

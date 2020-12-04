@@ -92,7 +92,7 @@ class Player:
             laser_obj = (laser,self.angle)
             self.lasers.append(laser_obj)
             self.cool_down_counter = 1
-            # self.fitness.append('s')
+            self.fitness.append('s')
 
     def draw(self, window):
         angle = self.angle
@@ -107,7 +107,7 @@ class Player:
             laser.draw(window)
 
     def move_lasers(self, vel, objs):
-        # self.cooldown()
+        self.cooldown()
         for (index,tuple) in enumerate(self.lasers):
             laserangle = tuple[1]
             laser = tuple[0]
@@ -141,7 +141,7 @@ class Player:
                 return final_fit
 
 class Enemy():
-    COOLDOWN = 100
+    COOLDOWN = 200
     COLOR_MAP = {
                 "red": (RED_SPACE_SHIP, RED_LASER),
                 "blue": (BLUE_SPACE_SHIP, BLUE_LASER),

@@ -4,7 +4,7 @@ import time
 from fitnessFunc import *
 import sys
 class GA:
-    def __init__(self,M, MaxGen, Pc, Pm, Er, n, UB, LB, type, enemy, level_quit, iterations):
+    def __init__(self,M, MaxGen, Pc, Pm, Er, n, UB, LB, type):
         self.M = M
         self.MaxGen = MaxGen
         self.Pc = Pc
@@ -17,7 +17,7 @@ class GA:
         self.BestGene = None
         self.Fitness = []
         self.Chromosome = self.initChromosome()
-        self.evolution(enemy, level_quit, iterations)
+        self.evolution()
 
     class initChromosome:
         def __init__(self):
@@ -29,10 +29,10 @@ class GA:
             self.child1 = None
             self.child2 = None
 
-    def evolution(self, enemy, level_quit, iterations):
+    def evolution(self):
         self.initialization()
         for idx in range(self.M):
-            self.fitnessFunc(enemy, level_quit, idx, None, iterations)
+            self.fitnessFunc(idx, None)
         for idxm in range(1,self.MaxGen):
             for k in range(0,self.M,2):
 
@@ -42,7 +42,7 @@ class GA:
                 self.Chromosome.newPopulation[k, 0] = np.array(self.Chromosome.child1)
                 self.Chromosome.newPopulation[k+1, 0] = np.array(self.Chromosome.child2)
             for i in range(self.M):
-                self.fitnessFunc(enemy, level_quit, i, 'New', iterations)
+                self.fitnessFunc(level_quit, i, 'New')
             self.elitism()
             self.Chromosome.population = self.Chromosome.newPopulation2
             self.Fitness.append(self.Chromosome.population[0,1])
@@ -51,28 +51,22 @@ class GA:
             print(self.Chromosome.population[0,1])
             print(self.Chromosome.population[0,0])
         for idx in range(self.M):
-            self.fitnessFunc(enemy, level_quit, k, None, iterations)
+            self.fitnessFunc(level_quit, k, None)
         self.Chromosome.population = self.Chromosome.population.tolist()
         self.Chromosome.population.sort(reverse=True, key=lambda x: x[1])
         self.BestChrom = self.Chromosome.population[0]
 
-    def fitnessFunc(self, enemy, level_quit, ind, gene, iterations):
+    def fitnessFunc(self, ind, gene):
         fit_list = []
         if gene == 'Best':
-            start = np.random.randint(10, high=100)
-            for i in range(iterations):
-                fit = game(enemy, level_quit, gene, self.N, None, None, start)
-                fit_list.append(fit)
+            fit = game(gene, self.N)
+            fit_list.append(fit)
         elif gene == 'New':
-            start = np.random.randint(10, high=100)
-            for i in range(iterations):
-                fit = game(enemy, level_quit, self.Chromosome.newPopulation[ind], self.n, i, iterations, start)
-                fit_list.append(fit)
+            fit = game(self.Chromosome.newPopulation[ind], self.n)
+            fit_list.append(fit)
         else:
-            start = np.random.randint(10, high=100)
-            for i in range(iterations):
-                fit = game(enemy, level_quit, self.Chromosome.population[ind], self.n, i, iterations, start)
-                fit_list.append(fit)
+            fit = game(self.Chromosome.population[ind], self.n)
+            fit_list.append(fit)
 
         trimmed_fitness = []
         for lst in fit_list:
