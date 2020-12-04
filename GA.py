@@ -18,9 +18,6 @@ class GA:
         self.Fitness = []
         self.Chromosome = self.initChromosome()
         self.evolution(enemy, level_quit, iterations)
-        # self.selection()
-        # self.crossover()
-        # self.mutation()
 
     class initChromosome:
         def __init__(self):
@@ -53,7 +50,6 @@ class GA:
             print('Generation: ' + str(idxm))
             print(self.Chromosome.population[0,1])
             print(self.Chromosome.population[0,0])
-
         for idx in range(self.M):
             self.fitnessFunc(enemy, level_quit, k, None, iterations)
         self.Chromosome.population = self.Chromosome.population.tolist()
@@ -63,16 +59,19 @@ class GA:
     def fitnessFunc(self, enemy, level_quit, ind, gene, iterations):
         fit_list = []
         if gene == 'Best':
+            start = np.random.randint(10, high=100)
             for i in range(iterations):
-                fit = game(enemy, level_quit, gene, self.N, None, None)
+                fit = game(enemy, level_quit, gene, self.N, None, None, start)
                 fit_list.append(fit)
         elif gene == 'New':
+            start = np.random.randint(10, high=100)
             for i in range(iterations):
-                fit = game(enemy, level_quit, self.Chromosome.newPopulation[ind], self.n, i, iterations)
+                fit = game(enemy, level_quit, self.Chromosome.newPopulation[ind], self.n, i, iterations, start)
                 fit_list.append(fit)
         else:
+            start = np.random.randint(10, high=100)
             for i in range(iterations):
-                fit = game(enemy, level_quit, self.Chromosome.population[ind], self.n, i, iterations)
+                fit = game(enemy, level_quit, self.Chromosome.population[ind], self.n, i, iterations, start)
                 fit_list.append(fit)
 
         trimmed_fitness = []
@@ -140,38 +139,82 @@ class GA:
         temp_parent1 = temp_parent1.tolist()
         temp_parent2 = temp_parent2.tolist()
 
-        idxm = np.random.randint(1, np.sum(self.n))
-        if idxm / np.sum(self.n) > 0.7:
-            idxm = round(idxm*0.7)
+        r_select = np.random.rand(1,1)
+        if r_select > 0.5:
+            idxm = np.random.randint(1, np.sum(self.n))
+            if idxm / np.sum(self.n) > 0.7:
+                idxm = round(idxm*0.7)
+            temp_child1 = temp_parent1[0:idxm] + temp_parent2[idxm:]
+            temp_child2 = temp_parent2[0:idxm] + temp_parent1[idxm:]
+            r = np.random.rand(1,2)
+            r = r[0]
 
-        temp_child1 = temp_parent1[0:idxm] + temp_parent2[idxm:]
-        temp_child2 = temp_parent2[0:idxm] + temp_parent1[idxm:]
-
-        r = np.random.rand(1,2)
-        r = r[0]
-
-        if r[0] <= self.Pc:
-            self.Chromosome.child1 = temp_child1
+            if r[0] <= self.Pc:
+                self.Chromosome.child1 = temp_child1
+            else:
+                self.Chromosome.child1 = temp_parent1
+            if r[1] <= self.Pc:
+                self.Chromosome.child2 = temp_child2
+            else:
+                self.Chromosome.child2 = temp_parent2
         else:
-            self.Chromosome.child1 = temp_parent1
-        if r[1] <= self.Pc:
-            self.Chromosome.child2 = temp_child2
-        else:
-            self.Chromosome.child2 = temp_parent2
+            temp_child1 = []
+            temp_child2 = []
+            idxm = np.random.randint(1,self.n)
+            run_total = np.cumsum(idxm)
+            config_array = []
+            ind_tup = (1,2)
+            for i in range(len(temp_parent1)):
+                j = 0
+                if i == run_total[j]:
+                    ind_tup = ind_tup[::-1]
+                    j += 1
+                config_array.append(ind_tup)
+            for k in range(len(temp_parent1)):
+                ind_temp = config_array[k]
+                if ind_temp == (1,2):
+                    temp_child1.append(temp_parent1[k])
+                    temp_child2.append(temp_parent2[k])
+                elif ind_temp == (2,1):
+                    temp_child1.append(temp_parent2[k])
+                    temp_child2.append(temp_parent1[k])
+            r = np.random.rand(1,2)
+            r = r[0]
+
+            if r[0] <= self.Pc:
+                self.Chromosome.child1 = temp_child1
+            else:
+                self.Chromosome.child1 = temp_parent1
+            if r[1] <= self.Pc:
+                self.Chromosome.child2 = temp_child2
+            else:
+                self.Chromosome.child2 = temp_parent2
 
     def mutation(self):
         temp_child1 = self.Chromosome.child1
         temp_child2 = self.Chromosome.child2
 
         r1 = np.random.rand(1,len(self.n))
-        idxm1 = np.random.randint(1,self.n)
-        valm1 = np.random.randint(self.LB,self.UB)
         r1 = r1[0]
+        idxm1 = np.random.randint(1,self.n)
 
         r2 = np.random.rand(1,len(self.n))
         r2 = r2[0]
         idxm2 = np.random.randint(1,self.n)
-        valm2 = np.random.randint(self.LB,self.UB)
+
+        valm1 = []
+        valm2 = []
+
+        for i in range(len(idxm1)):
+            if self.type[i] == 'int':
+                valm1temp = np.random.randint(self.LB[i],self.UB[i])
+                valm2temp = np.random.randint(self.LB[i],self.UB[i])
+
+            elif self.type[i] == 'float':
+                valm1temp = np.random.uniform(self.LB[i],self.UB[i])
+                valm2temp = np.random.uniform(self.LB[i],self.UB[i])
+            valm1.append(valm1temp)
+            valm2.append(valm2temp)
 
         for idx,num in enumerate(idxm1):
             if r1[idx] < self.Pm:

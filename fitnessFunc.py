@@ -31,7 +31,7 @@ def processGene(gene, N):
         gene_pieces.append(val)
     return gene_pieces
 
-def game(enemy_no, level_quit, gene, N, indices, iterations):
+def game(enemy_no, level_quit, gene, N, indices, iterations, start):
     timer = 0
     fitness = []
     run = True
@@ -93,9 +93,9 @@ def game(enemy_no, level_quit, gene, N, indices, iterations):
             level += 1
             if iterations:
                 for i in range(enemy_no):
-                    # enemyCoord = np.linspace(10, WIDTH-10, num=iterations, dtype='int')
-                    # enemy = Enemy(enemyCoord[indices], 5, random.choice(["red", "blue", "green"]))
-                    enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 50), random.choice(["red", "blue", "green"]))
+                    enemyCoord = np.linspace(start, WIDTH-start, num=iterations, dtype='int')
+                    enemy = Enemy(enemyCoord[indices], 5, random.choice(["red", "green"]))
+                    # enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 50), random.choice(["red", "blue", "green"]))
                     enemies.append(enemy)
                     enemiesFIS.append([enemy.x, enemy.y])
                     checkLength = len(enemies)
@@ -128,22 +128,28 @@ def game(enemy_no, level_quit, gene, N, indices, iterations):
         enemyCoord = [enemy.x,enemy.y]
         # enemyCoord = threatMat[0]
         fuzzy_lead = leadFIS(enemyCoord, gene_pieces)
-
         fuzzy_sys = steerFIS(playerCoord, fuzzy_lead.enemy)
         angleUpdate = fuzzy_sys.fuzzy_system()
         player.angle += angleUpdate*(-1)
+
         playerAngle = fuzzy_sys.player[2] - fuzzy_sys.angle
+        #
+        # angleUpdate = playerAngle
         # if playerAngle > 0:
         #     player.angle += -1
         # elif playerAngle < 0:
         #     player.angle += 1
+        # elif playerAngle == 0:
+        #     player.angle = player.angle
 
-        fuzzy_shoot = fireFIS(angleUpdate, fuzzy_lead.enemy, gene_pieces)
-        print([angleUpdate, fuzzy_shoot.fire])
+        fuzzy_shoot = fireFIS(playerAngle, fuzzy_lead.enemy, gene_pieces)
         if fuzzy_shoot.fire > 5.5:
             player.shoot()
-            print('--------------------S------------------')
+            # print('--------------------S------------------')
             check = 11
+        # if abs(playerAngle) < 0.5:
+        #     player.shoot()
+        #     check = 11
         if keys[pygame.K_UP]:
             breakpoint()
         if keys[pygame.K_LEFT]:
@@ -152,7 +158,7 @@ def game(enemy_no, level_quit, gene, N, indices, iterations):
             player.angle -= 1
 
         if keys[pygame.K_SPACE]:
-            print('--------------------S------------------')
+            # print('--------------------S------------------')
             player.shoot()
             check = 11
 

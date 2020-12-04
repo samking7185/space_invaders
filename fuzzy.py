@@ -185,18 +185,23 @@ class Defuzz:
         else:
             crisp_out = np.divide(np.sum(np.multiply(maxOuts, Xvals)),total_area)
 
+        return crisp_out
 
-            # outMF = list(self.output[i])
-        #     A_outN = 0.5*self.mu[i]*(outMF[0] - outMF[2])
-        #     A_out.append(A_outN)
-        #     A_outC.append(outMF[1])
-        #
-        # union = np.sum(A_out)
-        #
-        # out_Num = np.multiply(A_out, A_outC)
-        #
-        # if abs(union) > 0.1:
-        #     crisp_out = np.sum(out_Num)/union
-        # else:
-        #     crisp_out = 0
+    def defuzz_avg(self):
+        A_out = []
+        A_outC = []
+        output = self.output
+
+        for i in range(len(self.mu)):
+            output_temp = output[i]
+            A_temp = 0.5*self.mu[i]*(output_temp[2]-output_temp[0])
+            AC_temp = output_temp[1]
+            Out_temp = A_temp*AC_temp
+            A_out.append(Out_temp)
+            A_outC.append(A_temp)
+        Union = np.sum(A_outC)
+        if abs(Union) > 0.01:
+            crisp_out = np.sum(np.divide(A_out,Union))
+        else:
+            crisp_out = 0
         return crisp_out
