@@ -169,36 +169,32 @@ class leadFIS:
         self.enemy = [(enemyX + command1), (enemyY + command2)]
 
 class fireFIS:
-    def __init__(self, angleUpdate, enemy, gene):
-        self.enemy = enemy
+    def __init__(self, angleUpdate, gene):
         self.fire = 0
         self.angle = angleUpdate
         self.gene = gene
         self.fuzzy_system()
 
     def fuzzy_system(self):
-        enemyX = self.enemy[0]
-        enemyY = self.enemy[1]
+
         angle = self.angle
 
-        MF1 = Membership(enemyX)
-        MF2 = Membership(enemyY)
         MF3 = Membership(angle)
 
         # Gin3 = self.gene[6]
-        Grules = self.gene[6]
+        # Grules = self.gene[6]
 
-        inMF_values1 = [(0, 100, 200),
-                     (100,250,400),
-                     (250,400,550),
-                     (400,550,700),
-                     (600,700,800)]
-
-        inMF_values2 = [(0, 100, 200),
-                     (100,250,400),
-                     (250,400,550),
-                     (400,550,700),
-                     (600,700,800)]
+        # inMF_values1 = [(0, 100, 200),
+        #              (100,250,400),
+        #              (250,400,550),
+        #              (400,550,700),
+        #              (600,700,800)]
+        #
+        # inMF_values2 = [(0, 100, 200),
+        #              (100,250,400),
+        #              (250,400,550),
+        #              (400,550,700),
+        #              (600,700,800)]
 
         # inMF_values3 = [
         #                 sorted((Gin3[0], Gin3[1], Gin3[2])),
@@ -211,23 +207,23 @@ class fireFIS:
         inMF_values3 = [
                         (-3, -2, -1),
                         (-2, -1, 0),
-                        (-0.5, 0, 0.5),
+                        (-0.25, 0, 0.25),
                         (0, 1, 2),
                         (1, 2, 3)
                         ]
         outMF_values = [(0,1,2),(8,9,10)]
 
-        in11 = MF1.lshlder(inMF_values1[0])
-        in12 = MF1.triangle(inMF_values1[1])
-        in13 = MF1.triangle(inMF_values1[2])
-        in14 = MF1.triangle(inMF_values1[3])
-        in15 = MF1.rshlder(inMF_values1[4])
-
-        in21 = MF2.lshlder(inMF_values2[0])
-        in22 = MF2.triangle(inMF_values2[1])
-        in23 = MF2.triangle(inMF_values2[2])
-        in24 = MF2.triangle(inMF_values2[3])
-        in25 = MF2.rshlder(inMF_values2[4])
+        # in11 = MF1.lshlder(inMF_values1[0])
+        # in12 = MF1.triangle(inMF_values1[1])
+        # in13 = MF1.triangle(inMF_values1[2])
+        # in14 = MF1.triangle(inMF_values1[3])
+        # in15 = MF1.rshlder(inMF_values1[4])
+        #
+        # in21 = MF2.lshlder(inMF_values2[0])
+        # in22 = MF2.triangle(inMF_values2[1])
+        # in23 = MF2.triangle(inMF_values2[2])
+        # in24 = MF2.triangle(inMF_values2[3])
+        # in25 = MF2.rshlder(inMF_values2[4])
 
         in31 = MF3.lshlder(inMF_values3[0])
         in32 = MF3.triangle(inMF_values3[1])
@@ -236,48 +232,50 @@ class fireFIS:
         in35 = MF3.rshlder(inMF_values3[4])
 
         R = Rulebase()
-        Rules = [
-        R.AND_rule([in11, in21, in31]), R.AND_rule([in12, in21, in31]), R.AND_rule([in13, in21, in31]), R.AND_rule([in14, in21, in31]), R.AND_rule([in15, in21, in31]),
-        R.AND_rule([in11, in22, in31]), R.AND_rule([in12, in22, in31]), R.AND_rule([in13, in22, in31]), R.AND_rule([in14, in22, in31]), R.AND_rule([in15, in22, in31]),
-        R.AND_rule([in11, in23, in31]), R.AND_rule([in12, in23, in31]), R.AND_rule([in13, in23, in31]), R.AND_rule([in14, in23, in31]), R.AND_rule([in15, in23, in31]),
-        R.AND_rule([in11, in24, in31]), R.AND_rule([in12, in24, in31]), R.AND_rule([in13, in24, in31]), R.AND_rule([in14, in24, in31]), R.AND_rule([in15, in24, in31]),
-        R.AND_rule([in11, in25, in31]), R.AND_rule([in12, in25, in31]), R.AND_rule([in13, in25, in31]), R.AND_rule([in14, in25, in31]), R.AND_rule([in15, in25, in31]),
-        R.AND_rule([in11, in21, in32]), R.AND_rule([in12, in21, in32]), R.AND_rule([in13, in21, in32]), R.AND_rule([in14, in21, in32]), R.AND_rule([in15, in21, in32]),
-        R.AND_rule([in11, in22, in32]), R.AND_rule([in12, in22, in32]), R.AND_rule([in13, in22, in32]), R.AND_rule([in14, in22, in32]), R.AND_rule([in15, in22, in32]),
-        R.AND_rule([in11, in23, in32]), R.AND_rule([in12, in23, in32]), R.AND_rule([in13, in23, in32]), R.AND_rule([in14, in23, in32]), R.AND_rule([in15, in23, in32]),
-        R.AND_rule([in11, in24, in32]), R.AND_rule([in12, in24, in32]), R.AND_rule([in13, in24, in32]), R.AND_rule([in14, in24, in32]), R.AND_rule([in15, in24, in32]),
-        R.AND_rule([in11, in25, in32]), R.AND_rule([in12, in25, in32]), R.AND_rule([in13, in25, in32]), R.AND_rule([in14, in25, in32]), R.AND_rule([in15, in25, in32]),
-        R.AND_rule([in11, in21, in32]), R.AND_rule([in12, in21, in32]), R.AND_rule([in13, in21, in33]), R.AND_rule([in14, in21, in33]), R.AND_rule([in15, in21, in33]),
-        R.AND_rule([in11, in22, in33]), R.AND_rule([in12, in22, in33]), R.AND_rule([in13, in22, in33]), R.AND_rule([in14, in22, in33]), R.AND_rule([in15, in22, in33]),
-        R.AND_rule([in11, in23, in33]), R.AND_rule([in12, in23, in33]), R.AND_rule([in13, in23, in33]), R.AND_rule([in14, in23, in33]), R.AND_rule([in15, in23, in33]),
-        R.AND_rule([in11, in24, in33]), R.AND_rule([in12, in24, in33]), R.AND_rule([in13, in24, in33]), R.AND_rule([in14, in24, in33]), R.AND_rule([in15, in24, in33]),
-        R.AND_rule([in11, in25, in33]), R.AND_rule([in12, in25, in33]), R.AND_rule([in13, in25, in33]), R.AND_rule([in14, in25, in33]), R.AND_rule([in15, in25, in33]),
-        R.AND_rule([in11, in21, in34]), R.AND_rule([in12, in21, in34]), R.AND_rule([in13, in21, in34]), R.AND_rule([in14, in21, in34]), R.AND_rule([in15, in21, in34]),
-        R.AND_rule([in11, in22, in34]), R.AND_rule([in12, in22, in34]), R.AND_rule([in13, in22, in34]), R.AND_rule([in14, in22, in34]), R.AND_rule([in15, in22, in34]),
-        R.AND_rule([in11, in23, in34]), R.AND_rule([in12, in23, in34]), R.AND_rule([in13, in23, in34]), R.AND_rule([in14, in23, in34]), R.AND_rule([in15, in23, in34]),
-        R.AND_rule([in11, in24, in34]), R.AND_rule([in12, in24, in34]), R.AND_rule([in13, in24, in34]), R.AND_rule([in14, in24, in34]), R.AND_rule([in15, in24, in34]),
-        R.AND_rule([in11, in25, in34]), R.AND_rule([in12, in25, in34]), R.AND_rule([in13, in25, in34]), R.AND_rule([in14, in25, in34]), R.AND_rule([in15, in25, in34]),
-        R.AND_rule([in11, in21, in35]), R.AND_rule([in12, in21, in35]), R.AND_rule([in13, in21, in35]), R.AND_rule([in14, in21, in35]), R.AND_rule([in15, in21, in35]),
-        R.AND_rule([in11, in22, in35]), R.AND_rule([in12, in22, in35]), R.AND_rule([in13, in22, in35]), R.AND_rule([in14, in22, in35]), R.AND_rule([in15, in22, in35]),
-        R.AND_rule([in11, in23, in35]), R.AND_rule([in12, in23, in35]), R.AND_rule([in13, in23, in35]), R.AND_rule([in14, in23, in35]), R.AND_rule([in15, in23, in35]),
-        R.AND_rule([in11, in24, in35]), R.AND_rule([in12, in24, in35]), R.AND_rule([in13, in24, in35]), R.AND_rule([in14, in24, in35]), R.AND_rule([in15, in24, in35]),
-        R.AND_rule([in11, in25, in35]), R.AND_rule([in12, in25, in35]), R.AND_rule([in13, in25, in35]), R.AND_rule([in14, in25, in35]), R.AND_rule([in15, in25, in35]),
-        R.AND_rule([in11, in21, in35]), R.AND_rule([in12, in21, in35])
-        ]
+        # Rules = [
+        # R.AND_rule([in11, in21, in31]), R.AND_rule([in12, in21, in31]), R.AND_rule([in13, in21, in31]), R.AND_rule([in14, in21, in31]), R.AND_rule([in15, in21, in31]),
+        # R.AND_rule([in11, in22, in31]), R.AND_rule([in12, in22, in31]), R.AND_rule([in13, in22, in31]), R.AND_rule([in14, in22, in31]), R.AND_rule([in15, in22, in31]),
+        # R.AND_rule([in11, in23, in31]), R.AND_rule([in12, in23, in31]), R.AND_rule([in13, in23, in31]), R.AND_rule([in14, in23, in31]), R.AND_rule([in15, in23, in31]),
+        # R.AND_rule([in11, in24, in31]), R.AND_rule([in12, in24, in31]), R.AND_rule([in13, in24, in31]), R.AND_rule([in14, in24, in31]), R.AND_rule([in15, in24, in31]),
+        # R.AND_rule([in11, in25, in31]), R.AND_rule([in12, in25, in31]), R.AND_rule([in13, in25, in31]), R.AND_rule([in14, in25, in31]), R.AND_rule([in15, in25, in31]),
+        # R.AND_rule([in11, in21, in32]), R.AND_rule([in12, in21, in32]), R.AND_rule([in13, in21, in32]), R.AND_rule([in14, in21, in32]), R.AND_rule([in15, in21, in32]),
+        # R.AND_rule([in11, in22, in32]), R.AND_rule([in12, in22, in32]), R.AND_rule([in13, in22, in32]), R.AND_rule([in14, in22, in32]), R.AND_rule([in15, in22, in32]),
+        # R.AND_rule([in11, in23, in32]), R.AND_rule([in12, in23, in32]), R.AND_rule([in13, in23, in32]), R.AND_rule([in14, in23, in32]), R.AND_rule([in15, in23, in32]),
+        # R.AND_rule([in11, in24, in32]), R.AND_rule([in12, in24, in32]), R.AND_rule([in13, in24, in32]), R.AND_rule([in14, in24, in32]), R.AND_rule([in15, in24, in32]),
+        # R.AND_rule([in11, in25, in32]), R.AND_rule([in12, in25, in32]), R.AND_rule([in13, in25, in32]), R.AND_rule([in14, in25, in32]), R.AND_rule([in15, in25, in32]),
+        # R.AND_rule([in11, in21, in32]), R.AND_rule([in12, in21, in32]), R.AND_rule([in13, in21, in33]), R.AND_rule([in14, in21, in33]), R.AND_rule([in15, in21, in33]),
+        # R.AND_rule([in11, in22, in33]), R.AND_rule([in12, in22, in33]), R.AND_rule([in13, in22, in33]), R.AND_rule([in14, in22, in33]), R.AND_rule([in15, in22, in33]),
+        # R.AND_rule([in11, in23, in33]), R.AND_rule([in12, in23, in33]), R.AND_rule([in13, in23, in33]), R.AND_rule([in14, in23, in33]), R.AND_rule([in15, in23, in33]),
+        # R.AND_rule([in11, in24, in33]), R.AND_rule([in12, in24, in33]), R.AND_rule([in13, in24, in33]), R.AND_rule([in14, in24, in33]), R.AND_rule([in15, in24, in33]),
+        # R.AND_rule([in11, in25, in33]), R.AND_rule([in12, in25, in33]), R.AND_rule([in13, in25, in33]), R.AND_rule([in14, in25, in33]), R.AND_rule([in15, in25, in33]),
+        # R.AND_rule([in11, in21, in34]), R.AND_rule([in12, in21, in34]), R.AND_rule([in13, in21, in34]), R.AND_rule([in14, in21, in34]), R.AND_rule([in15, in21, in34]),
+        # R.AND_rule([in11, in22, in34]), R.AND_rule([in12, in22, in34]), R.AND_rule([in13, in22, in34]), R.AND_rule([in14, in22, in34]), R.AND_rule([in15, in22, in34]),
+        # R.AND_rule([in11, in23, in34]), R.AND_rule([in12, in23, in34]), R.AND_rule([in13, in23, in34]), R.AND_rule([in14, in23, in34]), R.AND_rule([in15, in23, in34]),
+        # R.AND_rule([in11, in24, in34]), R.AND_rule([in12, in24, in34]), R.AND_rule([in13, in24, in34]), R.AND_rule([in14, in24, in34]), R.AND_rule([in15, in24, in34]),
+        # R.AND_rule([in11, in25, in34]), R.AND_rule([in12, in25, in34]), R.AND_rule([in13, in25, in34]), R.AND_rule([in14, in25, in34]), R.AND_rule([in15, in25, in34]),
+        # R.AND_rule([in11, in21, in35]), R.AND_rule([in12, in21, in35]), R.AND_rule([in13, in21, in35]), R.AND_rule([in14, in21, in35]), R.AND_rule([in15, in21, in35]),
+        # R.AND_rule([in11, in22, in35]), R.AND_rule([in12, in22, in35]), R.AND_rule([in13, in22, in35]), R.AND_rule([in14, in22, in35]), R.AND_rule([in15, in22, in35]),
+        # R.AND_rule([in11, in23, in35]), R.AND_rule([in12, in23, in35]), R.AND_rule([in13, in23, in35]), R.AND_rule([in14, in23, in35]), R.AND_rule([in15, in23, in35]),
+        # R.AND_rule([in11, in24, in35]), R.AND_rule([in12, in24, in35]), R.AND_rule([in13, in24, in35]), R.AND_rule([in14, in24, in35]), R.AND_rule([in15, in24, in35]),
+        # R.AND_rule([in11, in25, in35]), R.AND_rule([in12, in25, in35]), R.AND_rule([in13, in25, in35]), R.AND_rule([in14, in25, in35]), R.AND_rule([in15, in25, in35]),
+        # R.AND_rule([in11, in21, in35]), R.AND_rule([in12, in21, in35])
+        # ]
 
 
-        R1 = []
-        R2 = []
-
-        for idx, rule in enumerate(Grules):
-            if rule == 1.0:
-                R1.append(Rules[idx])
-            elif rule == 2.0:
-                R2.append(Rules[idx])
-
+        # R1 = []
+        # R2 = []
+        #
+        # for idx, rule in enumerate(Grules):
+        #     if rule == 1.0:
+        #         R1.append(Rules[idx])
+        #     elif rule == 2.0:
+        #         R2.append(Rules[idx])
+        # R11 = R.OR_rule(R1)
+        # R22 = R.OR_rule(R2)
+        #
+        R22 = [in33]
+        R1 = [in31, in32, in34, in35]
         R11 = R.OR_rule(R1)
-        R22 = R.OR_rule(R2)
-
         MU = [R11, R22]
 
         fz = Defuzz(MU, outMF_values)

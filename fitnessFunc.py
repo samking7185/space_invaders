@@ -168,14 +168,14 @@ def game(gene, N):
             player.angle += angleUpdate*(-1)
 
             playerAngle = fuzzy_sys.player[2] - fuzzy_sys.angle
-        if enemies and abs(playerAngle) < 0.25:
-            player.shoot()
-            check = 11
-            waitCounter = 1
-            # fuzzy_shoot = fireFIS(playerAngle, fuzzy_lead.enemy, gene_pieces)
-            # if fuzzy_shoot.fire > 5.5:
-            #     player.shoot()
-            #     check = 11
+        # if enemies and abs(playerAngle) < 0.25:
+        #     player.shoot()
+        #     check = 11
+        #     waitCounter = 1
+            fuzzy_shoot = fireFIS(playerAngle, gene_pieces)
+            if fuzzy_shoot.fire > 7:
+                player.shoot()
+                check = 11
 
         if keys[pygame.K_UP]:
             breakpoint()

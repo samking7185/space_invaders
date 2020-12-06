@@ -46,7 +46,6 @@ class GA:
             self.elitism()
             self.Chromosome.population = self.Chromosome.newPopulation2
             self.Fitness.append(self.Chromosome.population[0,1])
-            breakpoint()
             print('------------------------------------')
             print('Generation: ' + str(idxm))
             print(self.Chromosome.population[0,1])

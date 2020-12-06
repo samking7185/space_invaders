@@ -5,10 +5,10 @@ from fitnessFunc import *
 import matplotlib.pyplot as plt
 
 # M must be even number
-M = 50
+M = 100
 MaxGen = 100
 Pc = 0.9
-Pm = 0.3
+Pm = 0.4
 Er = 0.05
 
 n =  [13, 13, 9,  9,  25, 25]
