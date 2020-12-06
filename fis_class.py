@@ -34,11 +34,11 @@ class steerFIS:
         input = self.player[2] - self.angle
         MF = Membership(input)
 
-        inMF_values = [(-90,-20,-10),
+        inMF_values = [(-179,-20,-10),
                      (-20,-10,0),
                      (-1,0,1),
                      (0,10,20),
-                     (10,20,90)]
+                     (10,20,179)]
 
         outMF_values = [(-3,-2,-1),
                      (-2,-1,0),

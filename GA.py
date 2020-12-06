@@ -42,16 +42,17 @@ class GA:
                 self.Chromosome.newPopulation[k, 0] = np.array(self.Chromosome.child1)
                 self.Chromosome.newPopulation[k+1, 0] = np.array(self.Chromosome.child2)
             for i in range(self.M):
-                self.fitnessFunc(level_quit, i, 'New')
+                self.fitnessFunc(i, 'New')
             self.elitism()
             self.Chromosome.population = self.Chromosome.newPopulation2
             self.Fitness.append(self.Chromosome.population[0,1])
+            breakpoint()
             print('------------------------------------')
             print('Generation: ' + str(idxm))
             print(self.Chromosome.population[0,1])
             print(self.Chromosome.population[0,0])
         for idx in range(self.M):
-            self.fitnessFunc(level_quit, k, None)
+            self.fitnessFunc(idx, None)
         self.Chromosome.population = self.Chromosome.population.tolist()
         self.Chromosome.population.sort(reverse=True, key=lambda x: x[1])
         self.BestChrom = self.Chromosome.population[0]
@@ -60,23 +61,23 @@ class GA:
         fit_list = []
         if gene == 'Best':
             fit = game(gene, self.N)
-            fit_list.append(fit)
+            # fit_list.append(fit)
         elif gene == 'New':
             fit = game(self.Chromosome.newPopulation[ind], self.n)
-            fit_list.append(fit)
+            # fit_list.append(fit)
         else:
             fit = game(self.Chromosome.population[ind], self.n)
-            fit_list.append(fit)
-
-        trimmed_fitness = []
-        for lst in fit_list:
-            if lst is None:
-                continue
-            elif len(lst)==0:
-                continue
-            else:
-                trimmed_fitness.append(np.amax(lst))
-        fit_value = np.sum(trimmed_fitness)
+            # fit_list.append(fit)
+        fit_value = fit
+        # trimmed_fitness = []
+        # for lst in fit_list:
+        #     if lst is None:
+        #         continue
+        #     elif len(lst)==0:
+        #         continue
+        #     else:
+        #         trimmed_fitness.append(np.amax(lst))
+        # fit_value = np.sum(trimmed_fitness)
 
         if gene == 'Best' :
             return fit_value

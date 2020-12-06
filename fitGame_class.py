@@ -3,6 +3,7 @@ import os
 import time
 import random
 import numpy as np
+from operator import itemgetter
 
 pygame.font.init()
 
@@ -54,10 +55,16 @@ class Laser:
         return not (self.x <= width and self.x >= 0)
 
     def collision(self, obj):
-        return collide(self, obj)
+        col = collide(self, obj)
+        if col:
+            self.fitness.append(100)
+        return col
 
     def buffer_collision(self, obj):
-        return collide_buffer(self, obj)
+        buf_col = collide_buffer(self, obj)
+        if buf_col:
+            self.fitness.append(buf_col)
+        return buf_col
 
 class Player:
     COOLDOWN = 50
@@ -73,7 +80,7 @@ class Player:
         self.lasers = []
         self.cool_down_counter = 0
         self.fitness = []
-
+        self.fitnessTemp = {}
     def get_width(self):
         return self.ship_img.get_width()
 
@@ -92,7 +99,7 @@ class Player:
             laser_obj = (laser,self.angle)
             self.lasers.append(laser_obj)
             self.cool_down_counter = 1
-            self.fitness.append('s')
+            # self.fitness.append('s')
 
     def draw(self, window):
         angle = self.angle
@@ -109,37 +116,45 @@ class Player:
     def move_lasers(self, vel, objs):
         self.cooldown()
         for (index,tuple) in enumerate(self.lasers):
+
             laserangle = tuple[1]
             laser = tuple[0]
             laser.move(vel,laserangle)
-
             if laser.off_screenY(HEIGHT):
                 laser.fitness.append(-50)
                 self.lasers.remove(tuple)
             elif laser.off_screenX(WIDTH):
                 laser.fitness.append(-50)
                 self.lasers.remove(tuple)
-
             else:
                 for obj in objs:
-                    if laser.collision(obj):
-                        laser.fitness.append(100)
-                        objs.remove(obj)
-                        if laser in self.lasers[0]:
-                            self.lasers.remove(tuple)
                     if laser.buffer_collision(obj):
                         val = np.max(laser.buffer_collision(obj))
-                        laser.fitness.append(val)
-            if laser.fitness:
-                if laser.fitness == [-50]:
-                    self.fitness.append(laser.fitness[0])
-                elif laser.fitness == [100]:
-                    self.fitness.append(laser.fitness[0])
-                else:
-                    self.fitness.append(np.amax(laser.fitness))
-                final_fit = self.fitness
-                return final_fit
+                    if laser.collision(obj):
+                        # laser.fitness.append(100)
+                        objs.remove(obj)
+                        if any(laser in sublist for sublist in self.lasers):
+                            self.lasers.remove(tuple)
 
+            if index in self.fitnessTemp.keys():
+                self.fitnessTemp[laser] = laser.fitness
+            else:
+                self.fitnessTemp[laser] = laser.fitness
+
+                    # self.fitness.append(obj.fitness)
+                        # laser.fitness.append(val)
+            # if laser.fitness:
+            #     if laser.fitness == [-50]:
+            #         self.fitness.append(laser.fitness[0])
+            #     elif laser.fitness == [100]:
+            #         self.fitness.append(laser.fitness[0])
+            #     else:
+            #         self.fitness.append(np.amax(laser.fitness))
+            #     final_fit = self.fitness
+            #     return final_fit
+
+    def processFitness(self):
+        s = 1
 class Enemy():
     COOLDOWN = 200
     COLOR_MAP = {
@@ -193,8 +208,7 @@ def collide_buffer(obj1, obj2):
         fitness.append(30)
     elif obj1.mask.overlap(obj2.buffer1, (offset_x, offset_y)) != None:
         fitness.append(20)
-    elif obj1.mask.overlap(obj2.buffer2, (offset_x, offset_y)) != None:
-        fitness.append(10)
+
 
     if fitness:
         fitness = np.amax(fitness)
