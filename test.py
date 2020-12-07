@@ -5,7 +5,7 @@ from fitnessFunc import *
 import matplotlib.pyplot as plt
 
 # M must be even number
-M = 100
+M = 50
 MaxGen = 100
 Pc = 0.9
 Pm = 0.4
@@ -15,13 +15,13 @@ n =  [13, 13, 9,  9,  25, 25]
 UB = [32, 32, 5,  10, 3,  3]
 LB = [0,  0,  -5, 0 , 1,  1]
 
-type = ['int','int','int','int','int','int']
+types = ['int','int','int','int','int','int']
 
 # enemy_no = 2
 # level_quit = 2
 # iterations = 7
 
-gaTest = GA(M, MaxGen, Pc, Pm, Er, n, UB, LB, type)
+gaTest = GA(M, MaxGen, Pc, Pm, Er, n, UB, LB, types)
 print('--------------------- Best Chromosome ------------------------')
 print(gaTest.BestChrom)
 print(gaTest.Fitness)

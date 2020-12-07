@@ -44,7 +44,10 @@ class Laser:
         vely = np.cos(angle*np.pi/180)
         self.y += round(vel*vely)
         self.x += round(vel*velx)
-
+        if type(self.y) != 'int':
+            self.y = int(self.y)
+            self.x = int(self.x)
+            
     def moveY(self, vel):
         self.y += vel
 
@@ -52,7 +55,7 @@ class Laser:
         return not (self.y <= height and self.y >= 0)
 
     def off_screenX(self,width):
-        return not (self.x <= width and self.x >= 0)
+        return not (self.x <= width and self.x >= -30)
 
     def collision(self, obj):
         col = collide(self, obj)
@@ -128,13 +131,15 @@ class Player:
                 self.lasers.remove(tuple)
             else:
                 for obj in objs:
-                    if laser.buffer_collision(obj):
-                        val = np.max(laser.buffer_collision(obj))
                     if laser.collision(obj):
                         # laser.fitness.append(100)
                         objs.remove(obj)
                         if any(laser in sublist for sublist in self.lasers):
                             self.lasers.remove(tuple)
+                    if laser.buffer_collision(obj):
+                       # val = np.max(laser.buffer_collision(obj))
+                       s = 1
+
 
             if index in self.fitnessTemp.keys():
                 self.fitnessTemp[laser] = laser.fitness
@@ -153,8 +158,7 @@ class Player:
             #     final_fit = self.fitness
             #     return final_fit
 
-    def processFitness(self):
-        s = 1
+
 class Enemy():
     COOLDOWN = 200
     COLOR_MAP = {
@@ -174,7 +178,6 @@ class Enemy():
         self.mask = pygame.mask.from_surface(self.ship_img)
         self.buffer = pygame.mask.from_surface(pygame.transform.scale(self.ship_img,(round(self.ship_img.get_width()*2) , round(self.ship_img.get_height()*2))))
         self.buffer1 = pygame.mask.from_surface(pygame.transform.scale(self.ship_img,(round(self.ship_img.get_width()*3) , round(self.ship_img.get_height()*3))))
-        self.buffer2 = pygame.mask.from_surface(pygame.transform.scale(self.ship_img,(round(self.ship_img.get_width()*4) , round(self.ship_img.get_height()*4))))
 
     def move(self, vel):
         self.y += vel
@@ -197,18 +200,19 @@ class Enemy():
 def collide(obj1, obj2):
     offset_x = obj2.x - obj1.x
     offset_y = obj2.y - obj1.y
-
     return obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None
 
+
 def collide_buffer(obj1, obj2):
-    offset_x = obj2.x - obj1.x
-    offset_y = obj2.y - obj1.y
+    offset_x = int(obj2.x - obj1.x)
+    offset_y = int(obj2.y - obj1.y)
     fitness = []
     if obj1.mask.overlap(obj2.buffer, (offset_x, offset_y)) != None:
         fitness.append(30)
+        obj1.fitness.append(1)
     elif obj1.mask.overlap(obj2.buffer1, (offset_x, offset_y)) != None:
         fitness.append(20)
-
+        obj1.fitness.append(1)
 
     if fitness:
         fitness = np.amax(fitness)

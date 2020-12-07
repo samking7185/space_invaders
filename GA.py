@@ -225,7 +225,6 @@ class GA:
                     temp_child2[numval] = valm2[idx]
 
     def elitism(self):
-        newPopulation2 = []
         elite_no = round(np.multiply(self.M,self.Er))
 
         temp_population = self.Chromosome.population

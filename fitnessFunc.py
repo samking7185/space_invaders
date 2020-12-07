@@ -77,7 +77,6 @@ def game(gene, N):
     clock = pygame.time.Clock()
     main_font = pygame.font.SysFont("comicsans", 50)
     lost_font = pygame.font.SysFont("comicsans", 60)
-
     enemies = []
     enemiesFIS = []
     wave_length = 0
@@ -87,8 +86,7 @@ def game(gene, N):
     player_initx = 350
     player_inity = 630
     player = Player(player_initx,player_inity)
-    check = 0
-    enemyIndex = 0
+    check = True
     enemyLength = 0
     waitCounter = 0
     lost = False
@@ -132,12 +130,18 @@ def game(gene, N):
                 continue
 
         if len(enemies) == 0:
+            enemyIndex = 0
+            direction = 0
             level += 1
             wave_length += 2
-
+            randomX = np.random.random_integers(1,70,1)
+            enemyCoord = np.linspace(randomX, WIDTH - randomX, num=wave_length, dtype='int')
             for i in range(wave_length):
-                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 50), random.choice(["red", "blue", "green"]))
+                # enemyCoord = np.linspace(10, WIDTH-70, num=wave_length, dtype='int')
+                # enemyCoordY = np.full((1,len(enemyCoord)), 2)
+                enemy = Enemy(int(enemyCoord[i]), random.randrange(1, 15), random.choice(["red", "green"]))
                 enemies.append(enemy)
+            enemyLength = len(enemies)
 
         gene_pieces = processGene(gene, N)
 
@@ -160,7 +164,7 @@ def game(gene, N):
             enemyLength = len(enemies)
             enemyArray = sortEnemies(enemies)
             # enemyCoord = [enemy.x,enemy.y]
-            enemyCoord = enemyArray[0]
+            enemyCoord = enemyArray[enemyIndex]
             playerCoord = [player_initx,player_inity,player.angle]
             fuzzy_lead = leadFIS(enemyCoord, gene_pieces)
             fuzzy_sys = steerFIS(playerCoord, fuzzy_lead.enemy)
@@ -175,8 +179,7 @@ def game(gene, N):
             fuzzy_shoot = fireFIS(playerAngle, gene_pieces)
             if fuzzy_shoot.fire > 7:
                 player.shoot()
-                check = 11
-
+               
         if keys[pygame.K_UP]:
             breakpoint()
         if keys[pygame.K_LEFT]:
