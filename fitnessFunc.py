@@ -93,8 +93,12 @@ def game(enemy_no, level_quit, gene, N, indices, iterations, start):
             level += 1
             if iterations:
                 for i in range(enemy_no):
-                    enemyCoord = np.linspace(start, WIDTH-start, num=iterations, dtype='int')
-                    enemy = Enemy(enemyCoord[indices], 5, random.choice(["red", "green"]))
+                    if indices <= 3:
+                        enemyCoord = np.linspace(start, WIDTH-start, num=4, dtype='int')
+                        enemy = Enemy(enemyCoord[indices], 5, random.choice(["red", "green"]))
+                    else:
+                        enemyCoord = np.linspace(start, WIDTH-start, num=4, dtype='int')
+                        enemy = Enemy(enemyCoord[indices-4], 300, random.choice(["red", "green"]))
                     # enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(0, 50), random.choice(["red", "blue", "green"]))
                     enemies.append(enemy)
                     enemiesFIS.append([enemy.x, enemy.y])

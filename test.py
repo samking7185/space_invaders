@@ -19,7 +19,7 @@ type = ['int','int','int','int','int','int','int','int']
 
 enemy_no = 1
 level_quit = 2
-iterations = 7
+iterations = 8
 
 gaTest = GA(M, MaxGen, Pc, Pm, Er, n, UB, LB, type, enemy_no, level_quit, iterations)
 print('--------------------- Best Chromosome ------------------------')
