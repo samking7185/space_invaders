@@ -19,11 +19,14 @@ from fitGame_class import *
 from fis_class import *
 
 def processGene(gene, N):
-    allele = gene[0].tolist()
+    allele = gene[0]
+    if not isinstance(allele, list):
+        allele = gene[0].tolist()
 
     gene_pieces = []
     Nvals = np.cumsum(N)
-    Nvals = Nvals.tolist()
+    if not isinstance(Nvals, list):
+        Nvals = Nvals.tolist()
 
     Nvals.insert(0,0)
     for idx in range(len(Nvals[:-1])):
@@ -137,9 +140,8 @@ def game(gene, N):
             randomX = np.random.random_integers(1,70,1)
             enemyCoord = np.linspace(randomX, WIDTH - randomX, num=wave_length, dtype='int')
             for i in range(wave_length):
-                # enemyCoord = np.linspace(10, WIDTH-70, num=wave_length, dtype='int')
-                # enemyCoordY = np.full((1,len(enemyCoord)), 2)
-                enemy = Enemy(int(enemyCoord[i]), random.randrange(1, 15), random.choice(["red", "green"]))
+                enemy = Enemy(random.randrange(10, WIDTH), random.randrange(1, 15), random.choice(["red", "green"]))
+                # enemy = Enemy(int(enemyCoord[i]), random.randrange(1, 15), random.choice(["red", "green"]))
                 enemies.append(enemy)
             enemyLength = len(enemies)
 
@@ -179,7 +181,7 @@ def game(gene, N):
             fuzzy_shoot = fireFIS(playerAngle, gene_pieces)
             if fuzzy_shoot.fire > 7:
                 player.shoot()
-               
+
         if keys[pygame.K_UP]:
             breakpoint()
         if keys[pygame.K_LEFT]:
